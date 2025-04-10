@@ -1,4 +1,4 @@
-# CITS3403 Agile Web Development Group Project
+# CITS3403 AWD Group Project
 
 ## Contributors
 | UWA ID   |  Name    | Github Username |
