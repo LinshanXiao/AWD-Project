@@ -1,0 +1,115 @@
+/* Background image */
+.bg {
+  background-image: url('/static/aphelios.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  position: relative;
+}
+
+/* Overlay layer */
+.mask {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+}
+
+/* Top navigation bar */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  position: relative;
+  z-index: 10;
+}
+
+/* Left-side nav section */
+.left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Logo image */
+.logo {
+  height: 1.5rem;
+}
+
+/* Menu links */
+.menu {
+  display: none;
+  gap: 1.5rem;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .menu {
+    display: flex;
+  }
+}
+
+/* Top-right button */
+.top-btn {
+  background-color: #60a5fa; /* Tailwind blue-400 */
+  color: black;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+}
+
+.top-btn:hover {
+  background-color: #3b82f6; /* Tailwind blue-500 */
+}
+
+/* Centered content area */
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Main title text */
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.7);
+  margin-bottom: 1.5rem;
+}
+
+/* Highlighted word in title */
+.highlight {
+  color: #facc15; /* Tailwind yellow-400 */
+}
+
+/* Main call-to-action button */
+.cta {
+  background-color: #facc15;
+  color: black;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.cta:hover {
+  background-color: #eab308; /* Tailwind yellow-500 */
+}
+
+  

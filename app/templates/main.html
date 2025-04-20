@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Analyzer App</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
+</head>
+<body class="bg">
+
+  <div class="mask"></div>
+
+  <header class="nav">
+    <div class="left">
+      <img src="{{ url_for('static', filename='ourlogo.png') }}" class="logo" alt="our Logo" />
+      <img src="{{ url_for('static', filename='lolicon.png') }}" class="logo" alt="LoL Icon" />
+      <nav class="menu">
+        <a href="#">LOL</a>
+        <a href="#">Valorant</a>
+        <a href="#">PUBG</a>
+        <a href="#">APEX</a>
+        <a href="#">More</a>
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <input type="text" placeholder="Search..." class="search-input" />
+      <button class="top-btn">Sign-Up</button>
+    </div>
+  </header>
+
+  <main class="center">
+    <div>
+      <h1 class="title">LEAGUE <span class="highlight">OF LEGENDS</span></h1>
+      <button class="cta">Ready? Summoner </button>
+    </div>
+  </main>
+
+</body>
+</html>
+
+
+
+
