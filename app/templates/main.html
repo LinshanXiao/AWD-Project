@@ -11,8 +11,18 @@
 </head>
 <body class="bg">
 
+  <!-- Background image rotate -->
+<div class="carousel">
+  <img id="bg-img" class="carousel-img" src="{{ url_for('static', filename='aphelios.jpg') }}" alt="Background">
+  <button class="arrow left" onclick="prevslide()">&#10094;</button>
+  <button class="arrow right" onclick="nextslide()">&#10095;</button>
+</div>
+
+
+  <!--  Overlay mask -->
   <div class="mask"></div>
 
+  <!--  Header -->
   <header class="nav">
     <div class="left">
       <img src="{{ url_for('static', filename='ourlogo.png') }}" class="logo" alt="our Logo" />
@@ -27,20 +37,39 @@
     </div>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="Search..." class="search-input" />
+      <form action="/search" method="GET" class="search-container">
+        <input
+          type="text"
+          name="q"
+          placeholder="SEARCH"
+          class="search-bar"
+          required
+        />
+        <button type="submit" class="search-icon" aria-label="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="white">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 6.65a7.5 7.5 0 010 10.6z" />
+          </svg>
+        </button>
+      </form>
       <button class="top-btn">Sign-Up</button>
     </div>
   </header>
 
+  <!-- Main content -->
   <main class="center">
     <div>
       <h1 class="title">LEAGUE <span class="highlight">OF LEGENDS</span></h1>
-      <button class="cta">Ready? Summoner </button>
+      <button class="cta">How to become GrandMaster</button>
     </div>
   </main>
 
+  <!--  Load JS AFTER content to make sure dom elements loaded -->
+
+  <script src="{{ url_for('static', filename='carousel.js') }}"></script>
 </body>
 </html>
+
 
 
 
