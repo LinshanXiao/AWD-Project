@@ -1,75 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game Analyzer App</title>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gaming Stats Tracker - Home</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-
 </head>
-<body class="bg">
-
-  <!-- Background image rotate -->
-<div class="carousel">
-  <img id="bg-img" class="carousel-img" src="{{ url_for('static', filename='aphelios.jpg') }}" alt="Background">
-  <button class="arrow left" onclick="prevslide()">&#10094;</button>
-  <button class="arrow right" onclick="nextslide()">&#10095;</button>
-</div>
-
-
-  <!--  Overlay mask -->
-  <div class="mask"></div>
-
-  <!--  Header -->
-  <header class="nav">
-    <div class="left">
-      <img src="{{ url_for('static', filename='ourlogo.png') }}" class="logo" alt="our Logo" />
-      <img src="{{ url_for('static', filename='lolicon.png') }}" class="logo" alt="LoL Icon" />
-      <nav class="menu">
-        <a href="#">LOL</a>
-        <a href="#">Valorant</a>
-        <a href="#">PUBG</a>
-        <a href="#">APEX</a>
-        <a href="#">More</a>
-      </nav>
+<body class="layout">
+  <!-- Header -->
+  <header class="topnav">
+    <div class="nav-left">
+      <!--<img src="{{ url_for('static', filename='ourlogo.png') }}" class="logo" alt="Logo" />--> 
+      <!-- we have no logo yet, so I am gonna commment out here for now, will add it when we have one-->
+      <h1 class="nav-title">Gaming Analyzer</h1>
     </div>
-
-    <div class="flex items-center gap-3">
-      <form action="/search" method="GET" class="search-container">
-        <input
-          type="text"
-          name="q"
-          placeholder="SEARCH"
-          class="search-bar"
-          required
-        />
-        <button type="submit" class="search-icon" aria-label="Search">
-          <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="white">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 6.65a7.5 7.5 0 010 10.6z" />
-          </svg>
+  
+    <div class="nav-center">
+      <div class="search-box">
+        <input type="text" placeholder="Search now" />
+        <button class="search-icon">&#128269;</button> <!-- search button and particular search icon -->
+      </div>
+    </div>
+  
+    <div class="nav-right">
+      <div class="notification-wrapper">
+        <button class="icon-btn">
+          <img src="{{ url_for('static', filename='images/bell.png') }}" alt="Notifications" class="icon">
         </button>
-      </form>
-      <button class="top-btn">Sign-Up</button>
+        <span class="notification-badge">1</span>
+        <!-- here we got 3 notification for example, can be changed or delete afterwwards-->
+      </div>
+      <a href="/profile">
+        <!-- this link to a logout button I am thinking (maybe)-->
+        <img src="{{ url_for('static', filename='images/cat.jpg') }}" alt="User" class="avatar">
+      </a>
     </div>
   </header>
+  
 
-  <!-- Main content -->
-  <main class="center">
-    <div>
-      <h1 class="title">LEAGUE <span class="highlight">OF LEGENDS</span></h1>
-      <button class="cta">How to become GrandMaster</button>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <ul class="nav-links">
+      <li><a href="#">Dashboard</a></li>
+      <li><a href="#">Games</a></li>
+      <li><a href="#">Upload</a></li>
+      <li><a href="#">Visualize</a></li>
+      <li><a href="#">Share</a></li>
+      <li><a href="#">Profile</a></li>
+      
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="hero">
+      <h1 class="title">Track Your Journey,<br><span class="highlight">Share Your Glory</span></h1>
+      <p class="subtitle">Upload your game stats, view your performance trends, and show off your achievements!</p>
+      <div class="cta-buttons">
+        <a href="#" class="cta">Get Started</a>
+        <a href="#" class="cta secondary">Learn More</a>
+      </div>
     </div>
   </main>
-
-  <!--  Load JS AFTER content to make sure dom elements loaded -->
-
-  <script src="{{ url_for('static', filename='carousel.js') }}"></script>
+    
 </body>
 </html>
-
 
 
 
