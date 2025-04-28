@@ -1,0 +1,117 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    flex-direction: column;
+}
+
+.image-slider {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.login-card {
+    background-color: transparent;
+    border:none;
+    box-shadow: none;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-size: 20px;
+    color: black;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid white;
+    background: rgba(128, 128, 128, 0.5);
+    border-radius: 6px;
+    font-size: 20px;
+    transition: border-color 0.2s;
+}
+
+.form-group input[type="submit"] {
+    background: linear-gradient(135deg, #4FC3F7, #9575CD);
+    color: #fff;
+    cursor: pointer;
+    padding: 12px 20px;
+    font-weight: bold;
+    border: none; /*  to make it cleaner */
+    border-radius: 6px; /*  rounder corners */
+    transition: background 0.5s, transform 0.2s;
+}
+
+.form-group input[type="submit"]:hover {
+    background: linear-gradient(135deg, #42A5F5, #7E57C2); /* darker blue to darker purple */
+    transform: scale(1.05); /* little zoom when hover */
+}
+
+
+@media (max-width: 600px) {
+    .login-card {
+        padding: 16px;
+        width: 90%;
+    }
+}
+
+body {
+    background-image:url("../images/yasuo.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    margin: 0;
+
+    padding: 0;
+    font-family: 'Open Sans', sans-serif;
+    background-color: #fff3e0;
+}
+
+.container {
+    background: rgba(128, 128, 128, 0.5); /* transparent grey ish */
+    border-radius: 10px;
+    padding: 20px;
+    width: 80%;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute; /* ADD THIS */
+    top: 10%; /* Adjust this number to move it down */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    font-size: 24px;
+    color: #380099;
+    font-family: 'lucida handwriting', cursive;
+}
+
+.links a {
+    color:black;
+    text-decoration: none; /* remove underline if you want */ 
+    transition: color 0.3s;
+}
+
+.links a:hover {
+    color: #9575CD; /* Soft purple when hovering */
+    text-decoration: underline; /* optional: add underline on hover */
+}
