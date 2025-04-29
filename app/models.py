@@ -11,12 +11,6 @@ class User(db.Model):
     PUBG_username = db.Column(db.String(150), nullable=True, unique=True)
     apex_username = db.Column(db.String(150), nullable=True, unique=True)
 
-    league_games = db.relationship(
-        'League_Game_Instance',
-        secondary='league_game_player',
-        backref='users',
-        lazy='dynamic'
-    )
 class League_Game_Instance(db.Model):
     game_id = db.Column(db.Integer, primary_key=True)
     date_played = db.Column(db.DateTime, nullable=False)
@@ -32,3 +26,10 @@ class League_Game_Player(db.Model):
     assists = db.Column(db.Integer, nullable=False)
     kda = db.Column(db.Float, nullable=False)
     team = db.Column(db.String(150), nullable=False)
+
+User.league_games = db.relationship(
+    'League_Game_Instance',
+    secondary=League_Game_Player.__table__,
+    backref='user',
+    lazy='dynamic'
+)
