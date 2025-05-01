@@ -15,7 +15,7 @@
     <div class="container">
         <div class="login-card">
             <h2 style="font-family: 'lucida handwriting', cursive">Login</h2>
-            <form method="Post">
+            <form method="POST" action="{{ url_for('login') }}">
                 <div class="form-group">
                     <label for="username">Username:</label>
                     <input type="text" id="username" name="username" required>
@@ -37,7 +37,7 @@
                 </div>
             </form>
             <div class="links">
-                <a href="#">Sign up</a> | <a href="#">Forgot password?</a>
+                <a href="{{ url_for('register') }}">Sign up</a> | <a href="#">Forgot password?</a>
         </div>
         </div>
     </div>
