@@ -1,3 +1,4 @@
+import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import db
@@ -21,8 +22,8 @@ class League_Game_Instance(db.Model):
     __tablename__ = "league_game_instance"
 
     game_id: so.Mapped[int] = so.mapped_column(primary_key=True, autoincrement=True)
-    date_played: so.Mapped[sa.DateTime] = so.mapped_column(nullable=False)
-    game_duration: so.Mapped[sa.Time] = so.mapped_column(nullable=False)
+    date_played: so.Mapped[datetime.datetime] = so.mapped_column(nullable=False)
+    game_duration: so.Mapped[datetime.time] = so.mapped_column(nullable=False)
     winning_team: so.Mapped[str] = so.mapped_column(sa.String(150), nullable=False)
 
     users: so.WriteOnlyMapped["list[User]"] = so.relationship(
