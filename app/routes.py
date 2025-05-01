@@ -9,15 +9,13 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # Temporary login check
         if username == 'admin' and password == '1234':
-            return redirect(url_for('main'))
+            return redirect(url_for('home'))
         else:
-            return "Invalid credentials", 401
+            return render_template('login.html', error="Invalid credentials")
 
     return render_template('login.html')
 
-# Register route
 @application.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -28,15 +26,17 @@ def register():
 
         if password != confirm:
             return "Passwords do not match", 400
-        
-        # Simulate successful registration
+
         print(f"User registered: {username}, {email}")
         return redirect(url_for('login'))
 
     return render_template('register.html')
 
-# Main (landing) page
-@application.route('/main')
-def main():
-    return render_template('main.html')
+@application.route('/home')
+def home():
+    return render_template('home.html')
+
+@application.route('/profile')
+def profile():
+    return "<h1>Profile page coming soon!</h1>"
 
