@@ -21,7 +21,7 @@ class User(db.Model):
 class League_Game_Instance(db.Model):
     __tablename__ = "league_game_instance"
 
-    game_id: so.Mapped[int] = so.mapped_column(primary_key=True, autoincrement=True)
+    game_id: so.Mapped[int] = so.mapped_column(primary_key=True)
     date_played: so.Mapped[datetime.datetime] = so.mapped_column(nullable=False)
     game_duration: so.Mapped[datetime.time] = so.mapped_column(nullable=False)
     winning_team: so.Mapped[str] = so.mapped_column(sa.String(150), nullable=False)
