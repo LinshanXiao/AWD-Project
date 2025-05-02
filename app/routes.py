@@ -10,10 +10,14 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        if username == 'admin' and password == '1234':
+        # filter by username and password
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.password == password:
+            # User is authenticated, set session or cookie here
             return redirect(url_for('home'))
         else:
-            return render_template('login.html', error="Invalid credentials")
+            return render_template('login.html', error="Invalid username or password")
 
     return render_template('login.html')
 
@@ -43,5 +47,11 @@ def home():
 
 @application.route('/profile')
 def profile():
-    return "<h1>Profile page coming soon!</h1>"
+    # Assuming you want to display the first user in the database
+    user = User.query.first()
+
+    if user:
+        return render_template('profile.html', user=user)
+    else:
+        return "No user found", 404
 
