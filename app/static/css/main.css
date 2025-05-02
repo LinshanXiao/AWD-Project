@@ -448,7 +448,6 @@ html {
 
 /* Footer Section */
 .footer {
-  margin-left: 250px;
   background-color: #0c1117;
   padding: 1rem 1rem;
   margin-top: 0rem;
@@ -521,12 +520,3 @@ html {
     text-align: center; /* centre when screen become smaller */
   }
 }
-
-
-
-
-
-
-
-
-  
