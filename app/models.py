@@ -14,7 +14,7 @@ class User(db.Model):
     PUBG_username: so.Mapped[str | None] = so.mapped_column(sa.String(150), unique=True, nullable=True)
     apex_username: so.Mapped[str | None] = so.mapped_column(sa.String(150), unique=True, nullable=True)
 
-    league_games: so.WriteOnlyMapped["list[League_Game_Instance]"] = so.relationship(
+    league_games: so.WriteOnlyMapped[list['League_Game_Instance']] = so.relationship(
         back_populates="users", secondary="league_game_player", lazy="dynamic"
     )
 
@@ -26,7 +26,7 @@ class League_Game_Instance(db.Model):
     game_duration: so.Mapped[datetime.time] = so.mapped_column(nullable=False)
     winning_team: so.Mapped[str] = so.mapped_column(sa.String(150), nullable=False)
 
-    users: so.WriteOnlyMapped["list[User]"] = so.relationship(
+    users: so.WriteOnlyMapped[list['User']] = so.relationship(
         back_populates="league_games", secondary="league_game_player"
     )
 

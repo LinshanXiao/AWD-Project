@@ -1,6 +1,7 @@
-from app import application
+from app import application, db
 from flask import render_template
 from flask import request, redirect, url_for
+from app.models import User, League_Game_Instance, League_Game_Player
 
 @application.route('/')
 @application.route('/login', methods=['GET', 'POST'])
@@ -22,10 +23,14 @@ def register():
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
-        confirm = request.form.get('confirm_password')
+        confirm = request.form.get('confirmPassword')
 
         if password != confirm:
             return "Passwords do not match", 400
+
+        newuser = User(username=username, email=email, password=password)
+        db.session.add(newuser)
+        db.session.commit()
 
         print(f"User registered: {username}, {email}")
         return redirect(url_for('login'))
