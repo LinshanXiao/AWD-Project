@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gaming Stats Tracker - Home</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/visualisation.css') }}">
 </head>
 <body class="layout">
   <!-- Header -->
@@ -59,63 +59,27 @@
     </ul>
   </nav>
 
-  <!-- Main Content for PROFILE PAGE -->
-   <div class="profile-container">
-    <img src="{{ url_for('static', filename='images/no_profile_pic.jpg') }}" alt="User" class="profile_picture">
-    <div class="profile-details">
-      <div class="nameId-container">
-        <h1> Username: andygibbo</h1>
-      </div>
-      <div class="nameId-container">
-        <h1> User Id: 1232421</h1>
-      </div>
+<!-- Content specificialy for VISUALISATION -->
+  
+<div class="main-container">
+    <!-- Our graph can go in here to visualise the users data -->
+    <div class="champion-win-rates">
+        <p> Put the graph in here </p>
     </div>
-   </div>
+  </div>
 
-
-   <div class="profile-info-container">
-    <div class="game-container">
-      <div class="game-title-container">
-        <h1 class="game-title"> League of Legends </h1>
-      </div>
-      <div class ="user-info">
-        <h2> Username: andygibbo </h2>
-      </div>
-      <div class="champion-container">
-      </div>
+  <div class="secondary-container">
+    <!-- These containers can be used to store extra info like maybe game history -->
+    <div class="data-container"> 
+        <p> Put some other data in these things</p>
+        <p> Planning on making this layout more specific to the games</p>
     </div>
+    <div class="data-container"> </div>
+    <div class="data-container"> </div>
+  </div>
 
-    <div class="game-container">
-      <div class="game-title-container">
-        <h1 class="game-title"> Apex Legends </h1>
-      </div>
-      <div class ="user-info">
-        <h2> Username: andygibbo </h2>
-      </div>
-      <div class="champion-container">
-      </div>
-    </div>
-
-    <div class="game-container">
-      <div class="game-title-container">
-        <h1 class="game-title"> Other Game </h1>
-      </div>
-      <div class ="user-info">
-        <h2> Username: andygibbo </h2>
-      </div>
-      <div class="champion-container">
-      </div>
-    </div>
-
-    <div class="game-to-be-added">
-      <div class="user-info">
-        <h2> New games coming soon... </h2>
-      </div>
-    </div>
-    
-   </div>
-   
-   <footer class="footer">
+  <!-- Copied from homepage  -->
+  <footer class="footer">
     <div class="footer-container">
       <div class="footer-columns">
   
@@ -150,12 +114,10 @@
         </div>
   
       </div>
-
-
   
+      <div class="footer-bottom">
+        <p>© 2025 Gaming Analyzer. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 </body>
-</html>
-
-
-
-

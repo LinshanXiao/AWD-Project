@@ -1,0 +1,440 @@
+html {
+    scroll-behavior: smooth;
+  }
+  
+  /*layout base*/
+  .layout {
+    display: flex;
+    min-height: 100vh; 
+    margin: 0;
+    flex-direction: column; 
+  }
+  
+  
+  /* top navigation bar */
+  .topnav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background-color: #111827;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    z-index: 1000; /*make sure the navbar is on top of other elements always*/
+    box-shadow: 0 4px 12px rgba(222, 210, 210, 0.242);
+    /* Add a shadow for depth */
+  }
+  
+  /*left section inside topnav (logo + title)*/
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* Center section inside topnav (search bar) */
+  .nav-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Right section inside topnav (Bell + Avatar) */
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  /* Site title text */
+  .nav-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+  }
+  
+  /* Search box container */
+  .search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 300px;
+  }
+  
+  .search-box input {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    padding-right: 2.5rem;
+    border-radius: 999px;
+    border: 1px solid #ccc;
+    background-color: #f9fafb;
+    outline: none;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+  
+  .search-box input:focus {
+    border-color:  rgb(208, 80, 101);
+    box-shadow: 0 0 0 3px rgba(236, 129, 129, 0.727);
+  }
+  
+  .search-icon {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #6b7280;
+    transition: color 0.3s;
+  }
+  
+  .search-icon:hover {
+    color: rgb(208, 80, 101);
+  }
+  
+  /* Responsive search box on smaller screens */
+  @media (max-width: 768px) {
+    .search-box {
+      width: 200px;
+    }
+  }
+  
+  /* Notification bell container (for badge positioning) */
+  .notification-wrapper {
+    position: relative;
+  }
+  
+  
+  /* Notification badge (red bubble with number) */
+  .notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(30%, -30%);
+    background-color:  rgb(208, 80, 101);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+  }
+  
+  /* Icon button (like bell) */
+  .icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    border-radius: 50%;
+  }
+  
+  .icon-btn:hover {
+    background-color:  rgb(213, 114, 130);
+  }
+  
+  .icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+  
+  
+  /* Avatar image (user profile picture) */
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+  }
+  
+  .avatar:hover {
+    border-color: rgb(208, 80, 101);
+  }
+  
+  /* Sidebar navigation */
+  .sidebar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 250px;
+    background-color: #0c1117;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2rem;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
+  
+  .logo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .logo {
+    height: 3rem;
+  }
+  
+  .site-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .nav-links {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .nav-links li {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: block;
+    padding: 0.75rem;
+    transition: background-color 0.3s;
+  }
+  
+  .nav-links a:hover {
+    background-color: rgb(208, 80, 101);
+    border-radius: 8px;
+  }
+  
+  /* Dropdown container */
+  .dropdown {
+    position: relative;
+  }
+  
+  /* Dropdown button style */
+  .dropdown-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    font-family: inherit;
+    font-weight: normal;
+    padding: 0.75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* Hover effect for dropdown button */
+  .dropdown-btn:hover {
+    background-color: rgb(208, 80, 101);
+    border-radius: 8px;
+  }
+  
+  /* Dropdown hidden content initially */
+  .dropdown-content {
+    display: none;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    width: 100%;
+    background-color: #1f2937;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    overflow-x: hidden; /*  Prevent scroll bar */
+    overflow-y: hidden;;
+    padding: 0.5rem 0; /* Add some top/bottom padding */
+  }
+  
+  .dropdown-content li {
+    list-style: none; /*  Remove bullet points */
+    width: 100%;
+  }
+  
+  /* Dropdown links */
+  .dropdown-content li a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    display: block;
+    text-align: center; /* ⭐ New: Center text */
+    width: 100%;
+    transition: background-color 0.3s;
+  }
+  
+  /* Hover effect for dropdown links */
+  .dropdown-content li a:hover {
+    background-color: rgb(208, 80, 101);
+    border-radius: 8px;
+  }
+
+
+/* The following is code specifically for VISUALISATION */
+  .main-container {
+    margin-left: 250px;
+    margin-top: 70px;
+    height: 580px;
+    background-color: black;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    overflow: visible;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 30px solid #0c1117;
+    
+  }
+
+  .champion-win-rates {
+    margin: 20px;
+    height: 500px;
+    width: 500px;
+    border: rgb(197, 16, 16) solid 2px;
+    border-radius: 10px;
+  }
+
+  .champion-win-rates p {
+    color: white;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .secondary-container {
+    margin-left: 250px;
+    height: 580px;
+    background-color: #1f2937;
+    border-bottom: 30px solid #0c1117;
+    display: flex; 
+    flex-direction: row;
+    gap: 20px; 
+    align-items: center; 
+    justify-content: center; 
+  }
+
+  .data-container {
+    margin: 20px;
+    height: 500px;
+    width: 33%;
+    border: black solid 2px;
+    border-radius: 10px;
+    background-color: #111827;
+
+  }
+
+  .data-container p {
+    color: white;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .bottom-section {
+    display: flex;
+    gap: 20px;
+    margin-top: 0px;
+    margin-left: 250px;
+    background-color: #111827;
+    padding: 10px;
+    height: 200px;
+    border-bottom: 10px solid #0c1117;
+    padding-right: 30px;
+
+  }
+
+  /* Footer Section */
+.footer {
+    margin-left: 250px;
+    background-color: #0c1117;
+    padding: 1rem 1rem;
+    margin-top: 0rem;
+  }
+  
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .footer-columns {
+    display: flex;
+    justify-content: center;
+    gap: 6rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  
+  .footer-column {
+    min-width: 150px;
+  }
+  
+  .footer-heading {
+    font-size: 1.2rem;
+    color: white;
+    margin-bottom: 1rem;
+    font-weight: bold;
+  }
+  
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .footer-links li {
+    margin-bottom: 0.7rem;
+  }
+  
+  .footer-links a {
+    color: #cfcfcf;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s;
+  }
+  
+  .footer-links a:hover {
+    color: rgb(208, 80, 101);
+  }
+  
+  .footer-bottom {
+    border-top: 1px solid #374151;
+    padding-top: 1rem;
+    text-align: center;
+  }
+  
+  .footer-bottom p {
+    color: #9ca3af;
+    font-size: 0.9rem;
+  }
+  
+  @media (max-width: 768px) {
+    .footer-columns {
+      flex-direction: column; 
+      align-items: center;
+      gap: 2rem;
+    }
+  
+    .footer-column {
+      text-align: center;
+    }
+  }
