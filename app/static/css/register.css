@@ -11,6 +11,23 @@ body {
     color: black;
 }
 
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    text-decoration: none;
+    background-color: #3498db;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #2980b9;
+}
+
 .container {
     background: rgba(128, 128, 128, 0.5); /* semi-transparent grey */
     border-radius: 10px;

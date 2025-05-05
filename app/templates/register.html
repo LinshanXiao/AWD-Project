@@ -9,6 +9,10 @@
 </head>
 
 <body>
+    <!-- Back Button -->
+    <a href="{{ url_for('login') }}" class="back-button">Back</a>
+
+
     <div class="container">
         <!-- Login card containing the form -->
         <div class="login-card">
@@ -30,7 +34,7 @@
                 </div>
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password:</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <input type="password" id="confirm_password" name="confirmPassword" required>
                 </div>
                 <!-- Submit button for the form -->
                 <div class="form-group">
