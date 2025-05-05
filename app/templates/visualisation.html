@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/visualisation.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Content specificialy for VISUALISATION -->
+  
+<div class="main-container">
+    <!-- Our graph can go in here to visualise the users data -->
+    <div class="champion-win-rates">
+        <p> Put the graph in here </p>
+    </div>
+  </div>
+
+  <div class="secondary-container">
+    <!-- These containers can be used to store extra info like maybe game history -->
+    <div class="data-container"> 
+        <p> Put some other data in these things</p>
+        <p> Planning on making this layout more specific to the games</p>
+    </div>
+    <div class="data-container"> </div>
+    <div class="data-container"> </div>
+  </div>
+{% endblock %}
