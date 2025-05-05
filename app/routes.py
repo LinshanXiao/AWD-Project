@@ -54,4 +54,8 @@ def profile():
         return render_template('profile.html', user=user)
     else:
         return "No user found", 404
+    
+@application.route('/visualisation')
+def visualisation():
+    return render_template('visualisation.html')
 
