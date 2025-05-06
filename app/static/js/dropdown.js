@@ -12,5 +12,18 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+
+
+  const avatar = document.getElementById('userAvatar');
+  const dropdown = document.getElementById('dropdownMenu');
+
+  avatar.addEventListener('click', function (e) {
+    e.stopPropagation();
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', function () {
+    dropdown.style.display = 'none';
+  });
   
   

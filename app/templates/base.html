@@ -5,8 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{%block title %} Gaming Stats Tracker - Home {% endblock%}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+  <!-- user login status pass to js-->
+  <script>
+    const isUserLoggedIn = "{{ 'true' if current_user.is_authenticated else 'false' }}";
+  </script>
+  
+
+  <!-- check login or not-->
+  <script src="{{ url_for('static', filename='js/checkLogin.js') }}"></script>
   {% block css %}{% endblock %}
-</head>
+  </head>
+
 <body class="layout">
   <!-- Header -->
   <header class="topnav">
@@ -31,10 +41,21 @@
         <span class="notification-badge">1</span>
         <!-- here we got 3 notification for example, can be changed or delete afterwwards-->
       </div>
-      <a href="{{ url_for('profile') }}">
-        <!-- this link to a logout button I am thinking (maybe)-->
-        <img src="{{ url_for('static', filename='images/cat.jpg') }}" alt="User" class="avatar">
-      </a>
+      <div class="user-dropdown">
+        <img src="{{ url_for('static', filename='images/cat.jpg') if current_user.is_authenticated else url_for('static', filename='images/no_profile_pic.jpg') }}"
+ alt="User" class="avatar" id="userAvatar">
+        <div class="dropdown-menu" id="dropdownMenu">
+          {% if current_user.is_authenticated %}
+            <p>Welcome, {{ current_user.username }}!</p>
+            <a href="{{ url_for('auth_bp.logout') }}">Logout</a>
+          {% else %}
+        <a href="{{ url_for('auth_bp.login') }}">Login</a>
+        <a href="{{ url_for('auth_bp.register') }}">Register</a>
+          {% endif %}
+
+        </div>
+      </div>
+      
     </div>
   </header>
   
@@ -42,7 +63,7 @@
   <!-- Sidebar -->
   <nav class="sidebar">
     <ul class="nav-links">
-      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('main_bp.home') }}">Home</a></li>
       <!-- Dropdown menu here -->
       <li class="dropdown">
         <button class="dropdown-btn">Games</button>
@@ -53,9 +74,9 @@
           <li><a href="#">APEX</a></li>
         </ul>
       </li>
-      <li><a href="{{ url_for('visualisation') }}">Visualize</a></li>
+      <li><a href="#" class="protected-link" data-url="{{ url_for('main_bp.visualisation') }}">Visualize</a></li>
       <li><a href="#">Share</a></li>
-      <li><a href="{{ url_for('profile') }}">Profile</a></li>
+      <li><a href="#" class="protected-link" data-url="{{ url_for('main_bp.profile') }}">Profile</a></li>
       
     </ul>
   </nav>
