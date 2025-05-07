@@ -27,11 +27,15 @@
     </div>
   
     <div class="nav-center">
-      <div class="search-box">
-        <input type="text" placeholder="Search now" />
-        <button class="search-icon">&#128269;</button> <!-- search button and particular search icon -->
-      </div>
+      {% if current_user.is_authenticated %}
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Search users by name or ID" />
+          <button class="search-icon">🔍</button>
+          <div class="search-dropdown" id="searchResults"></div>
+        </div>
+      {% endif %}
     </div>
+    
   
     <div class="nav-right">
       <div class="notification-wrapper">
@@ -87,6 +91,8 @@
   </main>
   
   <script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/userSearch.js') }}"></script>
+
 </body>
 </html>
 
