@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
-    <h1 class="welcome">Welcome to GameAnalyzer</h1>
+    <h1 class="welcome">
+        <a href="{{ url_for('main_bp.home') }}" style="text-decoration: underline; color: inherit;">
+          Welcome to GameAnalyzer
+        </a>
+      </h1>
 
     <div class="container">
         <div class="login-card">
@@ -17,7 +21,7 @@
                 <p class="error">{{ error }}</p>
             {% endif %}
 
-            <form method="POST" action="{{ url_for('login') }}">
+            <form method="POST" action="{{ url_for('auth_bp.login') }}">
                 <div class="form-group">
                     <label for="username">Username:</label>
                     <input type="text" id="username" name="username" required>
@@ -37,7 +41,7 @@
             </form>
 
             <div class="links">
-                <a href="{{ url_for('register') }}">Sign up</a> |
+                <a href="{{ url_for('auth_bp.register') }}">Sign up</a> |
                 <a href="#">Forgot password?</a>
             </div>
         </div>

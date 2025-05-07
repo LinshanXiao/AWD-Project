@@ -2,8 +2,9 @@ import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import db
+from flask_login import UserMixin
 
-class User(db.Model):
+class User(UserMixin,db.Model):
     __tablename__ = "user"
     id : so.Mapped[int] = so.mapped_column(primary_key=True, autoincrement=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(150), unique=True, nullable=False)

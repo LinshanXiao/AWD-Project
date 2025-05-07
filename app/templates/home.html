@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
+{% if current_user.is_authenticated %}
+  <p>Welcome, {{ current_user.username }}!</p>
+{% else %}
+  <p>Please <a href="{{ url_for('auth_bp.login') }}">log in</a>.</p>
+{% endif %}
+
+
+
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 {% endblock %}

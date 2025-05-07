@@ -10,14 +10,14 @@
 
 <body>
     <!-- Back Button -->
-    <a href="{{ url_for('login') }}" class="back-button">Back</a>
+    <a href="{{ url_for('auth_bp.login') }}" class="back-button">Back</a>
 
 
     <div class="container">
         <!-- Login card containing the form -->
         <div class="login-card">
             <h2>Register</h2>
-            <form method="Post">
+            <form method="POST" action="{{ url_for('auth_bp.register') }}">
                 <!-- Form group for username -->
                 <div class="form-group">
                     <label for="username">Username:</label>
