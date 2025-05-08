@@ -334,3 +334,29 @@ html {
 .dropdown-menu a:hover {
   background-color: #f0f0f0;
 }
+
+
+.search-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  width: 100%;
+}
+
+.dropdown-item {
+  padding: 8px;
+  cursor: default;
+  border-bottom: 1px solid #eee;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item button {
+  margin-left: 10px;
+}
