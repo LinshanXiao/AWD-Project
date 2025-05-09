@@ -1,709 +1,90 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game data upload system</title>
-    <style>
-        :root {
-            --primary-color: #3498db;
-            --success-color: #2ecc71;
-            --error-color: #e74c3c;
-            --warning-color: #f39c12;
-            --dark-color: #2c3e50;
-            --light-color: #ecf0f1;
-            --border-radius: 6px;
-        }
+{% extends "base.html" %}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+{% endblock %}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
+{% block content %}
+<div class="container">
+  <header class="upload-header">
+      <h1>Game Data Upload</h1>
+      <p class="subtitle">Upload a CSV file to import game and player data into the database.</p>
+  </header>
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    
+    <div class="card">
+        <h2>CSV File Upload</h2>
+        <div class="upload-container">
+            <div id="upload-area" class="upload-area">
+                 <i class="material-icons">upload</i>
+                    <p class="upload-text">Drag the CSV file here or click to select the file</p>
+                    <input type="file" id="file-input" class="file-input" accept=".csv">
+                    <button class="btn btn-upload" id="select-file-btn">Select File</button>
+                </div>
 
-        header {
-            background-color: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            text-align: center;
-        }
+                <div id="file-info" class="file-info">
+                    <p><span class="material-icons">description</span> Selected File: <span id="file-name" class="file-name"></span></p>
+                    <p class="file-size">Size: <span id="file-size"></span></p>
+                    <button class="btn" id="upload-btn">Upload</button>
+                </div>
 
-        h1 {
-            color: var(--dark-color);
-            font-weight: 600;
-        }
+                <div id="progress-container" class="progress-container">
+                    <div class="progress"><div id="progress-bar" class="progress-bar"></div></div>
+                    <p id="progress-text" class="progress-text">Uploading... 0%</p>
+                </div>
 
-        .subtitle {
-            color: #666;
-            margin-top: 5px;
-        }
+                <div id="alert-success" class="alert alert-success"></div>
+                <div id="alert-error" class="alert alert-error"></div>
+                <div id="alert-warning" class="alert alert-warning"></div>
 
-        .card {
-            background-color: white;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            color: var(--dark-color);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .upload-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .upload-area {
-            width: 100%;
-            border: 2px dashed #ccc;
-            border-radius: var(--border-radius);
-            padding: 40px 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .upload-area.highlight {
-            border-color: var(--primary-color);
-            background-color: rgba(52, 152, 219, 0.1);
-        }
-
-        .upload-area i {
-            font-size: 48px;
-            color: #aaa;
-            margin-bottom: 10px;
-        }
-
-        .upload-text {
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #666;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #2980b9;
-        }
-
-        .btn-upload {
-            margin-top: 10px;
-        }
-
-        .progress-container {
-            width: 100%;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .progress {
-            width: 100%;
-            height: 10px;
-            background-color: #eee;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background-color: var(--primary-color);
-            width: 0;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            margin-top: 5px;
-            text-align: center;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: var(--border-radius);
-            margin-top: 20px;
-            display: none;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .alert-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-        }
-
-        .results {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: var(--border-radius);
-            display: none;
-        }
-
-        .results h3 {
-            margin-bottom: 10px;
-            color: var(--dark-color);
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 10px 20px;
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            flex: 1;
-            margin: 0 10px;
-        }
-
-        .stat-item h4 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--dark-color);
-        }
-
-        .added .stat-value {
-            color: var(--success-color);
-        }
-
-        .updated .stat-value {
-            color: var(--primary-color);
-        }
-
-        .errors .stat-value {
-            color: var(--error-color);
-        }
-
-        .error-details {
-            max-height: 200px;
-            overflow-y: auto;
-            background-color: white;
-            padding: 10px;
-            border-radius: var(--border-radius);
-            border: 1px solid #ddd;
-            margin-top: 10px;
-        }
-
-        .error-list {
-            list-style-type: none;
-        }
-
-        .error-list li {
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-            color: var(--error-color);
-        }
-
-        .help-section {
-            background-color: #f5f9ff;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-top: 20px;
-        }
-
-        .help-section h3 {
-            color: var(--dark-color);
-            margin-bottom: 10px;
-        }
-
-        .tips {
-            margin-top: 15px;
-        }
-
-        .tips li {
-            margin-bottom: 10px;
-        }
-
-        .template-section {
-            text-align: center;
-            margin-top: 30px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: var(--border-radius);
-            border: 1px dashed #ccc;
-        }
-
-        .file-info {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: var(--border-radius);
-            text-align: left;
-            display: none;
-        }
-
-        .file-info p {
-            margin: 5px 0;
-        }
-
-        .file-name {
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .file-size {
-            color: #666;
-            font-size: 14px;
-        }
-
-        /* Material Icons */
-        .material-icons {
-            font-family: 'Material Icons';
-            font-weight: normal;
-            font-style: normal;
-            font-size: 24px;
-            display: inline-block;
-            line-height: 1;
-            text-transform: none;
-            letter-spacing: normal;
-            word-wrap: normal;
-            white-space: nowrap;
-            direction: ltr;
-            vertical-align: middle;
-        }
-
-        /* Table style */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            background-color: #f5f5f5;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .stats {
-                flex-direction: column;
-            }
-
-            .stat-item {
-                margin: 5px 0;
-            }
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Game data upload system</h1>
-            <p class="subtitle">Upload a CSV file to import game data into the database</p>
-        </header>
-
-        <main>
-            <div class="card">
-                <h2>CSV File upload</h2>
-                <div class="upload-container">
-                    <div id="upload-area" class="upload-area">
-                        <i class="material-icons">cloud_upload</i>
-                        <p class="upload-text">Drag the CSV file here or click to select the file</p>
-                        <input type="file" id="file-input" class="file-input" accept=".csv">
-                        <button class="btn btn-upload" id="select-file-btn">Select the file</button>
+                <div id="results" class="results">
+                    <h3>Import Results</h3>
+                    <div class="stats">
+                        <div class="stat-item added"><h4>Games Added</h4><div id="added-count" class="stat-value">0</div></div>
+                        <div class="stat-item updated"><h4>Games Updated</h4><div id="updated-count" class="stat-value">0</div></div>
+                        <div class="stat-item errors"><h4>Errors</h4><div id="error-count" class="stat-value">0</div></div>
                     </div>
 
-                    <div id="file-info" class="file-info">
-                        <p><span class="material-icons">description</span> Select the file: <span id="file-name" class="file-name"></span></p>
-                        <p class="file-size">File size: <span id="file-size"></span></p>
-                        <button class="btn" id="upload-btn">Upload a file</button>
-                    </div>
-
-                    <div id="progress-container" class="progress-container">
-                        <div class="progress">
-                            <div id="progress-bar" class="progress-bar"></div>
-                        </div>
-                        <p id="progress-text" class="progress-text">Pass on... 0%</p>
-                    </div>
-
-                    <div id="alert-success" class="alert alert-success"></div>
-                    <div id="alert-error" class="alert alert-error"></div>
-                    <div id="alert-warning" class="alert alert-warning"></div>
-
-                    <div id="results" class="results">
-                        <h3>Import result</h3>
-                        <div class="stats">
-                            <div class="stat-item added">
-                                <h4>adding record</h4>
-                                <div id="added-count" class="stat-value">0</div>
-                            </div>
-                            <div class="stat-item updated">
-                                <h4>update record</h4>
-                                <div id="updated-count" class="stat-value">0</div>
-                            </div>
-                            <div class="stat-item errors">
-                                <h4>error while executing function</h4>
-                                <div id="error-count" class="stat-value">0</div>
-                            </div>
-                        </div>
-
-                        <div id="error-container" style="display: none;">
-                            <h4>Error Details:</h4>
-                            <div class="error-details">
-                                <ul id="error-list" class="error-list"></ul>
-                            </div>
-                        </div>
+                    <div id="error-container" style="display: none;">
+                        <h4>Error Details:</h4>
+                        <ul id="error-list" class="error-list"></ul>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="card">
-                <h2>CSV File format requirements</h2>
-                <p>The uploaded CSV file must contain the following required fields:</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Column name </th>
-                            <th> Description </th>
-                            <th> Required </th>
-                            <th> Data type </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>game_id</td>
-                            <td> Game Unique Identifier </td>
-                            <td> Yes </td>
-                            <td> String </td>
-                        </tr>
-                        <tr>
-                            <td>name</td>
-                            <td>Game Name </td>
-                            <td>No</td>
-                            <td>String</td>
-                        </tr>
-                        <tr>
-                            <td>description</td>
-                            <td>Game description</td>
-                            <td>No</td>
-                            <td>Text</td>
-                        </tr>
-                        <tr>
-                            <td>genre</td>
-                            <td>Game type</td>
-                            <td>No</td>
-                            <td>String</td>
-                        </tr>
-                        
-                    </tbody>
-                </table>
+        <div class="card">
+            <h2>CSV File Format Requirements</h2>
+            <p>The uploaded CSV must include the following fields:</p>
+            <table>
+                <thead>
+                    <tr><th>Column</th><th>Description</th><th>Required</th><th>Data Type</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>game_id</td><td>Game Unique Identifier</td><td>Yes</td><td>Integer</td></tr>
+                    <tr><td>date_played</td><td>Date of the game</td><td>Yes</td><td>Date (YYYY-MM-DD)</td></tr>
+                    <tr><td>game_duration</td><td>Game duration</td><td>Yes</td><td>Time (HH:MM:SS)</td></tr>
+                    <tr><td>winning_team</td><td>Winning team</td><td>Yes</td><td>String</td></tr>
+                    <tr><td>league_username</td><td>LoL username</td><td>Yes</td><td>String</td></tr>
+                    <tr><td>champion</td><td>Champion used</td><td>Yes</td><td>String</td></tr>
+                    <tr><td>kills</td><td>Kills</td><td>Yes</td><td>Integer</td></tr>
+                    <tr><td>deaths</td><td>Deaths</td><td>Yes</td><td>Integer</td></tr>
+                    <tr><td>assists</td><td>Assists</td><td>Yes</td><td>Integer</td></tr>
+                    <tr><td>kda</td><td>KDA ratio (K+A)/D </td><td>Yes</td><td>Float</td></tr>
+                    <tr><td>team</td><td>Player's team</td><td>Yes</td><td>String</td></tr>
+                </tbody>
+            </table>
 
-                <div class="help-section">
-                    <h3>CSV Upload prompt</h3>
-                    <ul class="tips">
-                        <li> Ensure that the first line of the CSV file contains column names. </li>
-                        The <li>game_id column is necessary for uniquely identifying each game record. </li>
-                        <li> If game_id already exists, the corresponding record will be updated. </li>
-                        <li> If game_id does not exist, a new record will be created. </li>
-                        The date format should be YYYY-MM-DD, for example, 2023-05-15. </li>
-                        The size of the CSV file should not exceed 16MB. </li>
-                        <li> Ensure that the CSV file uses UTF-8 encoding to handle special characters correctly. </li>
-                    </ul>
-                </div>
-
-                <div class="template-section">
-                    <h3>Download CSV template </h3>
-                    <p>Not sure how to format your CSV file? Download our template as a starting point. </p>
-                    <button class="btn" id="download-template"> download CSV template </button>
-                </div>
+            <div class="template-section">
+                <h3>Download Template</h3>
+                <p>Need help formatting? Use our CSV template:</p>
+                <button class="btn" id="download-template">Download CSV Template</button>
             </div>
-        </main>
-    </div>
+        </div>
+    
+</div>
+{% endblock %}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Element reference
-            const uploadArea = document.getElementById('upload-area');
-            const fileInput = document.getElementById('file-input');
-            const selectFileBtn = document.getElementById('select-file-btn');
-            const uploadBtn = document.getElementById('upload-btn');
-            const fileInfo = document.getElementById('file-info');
-            const fileName = document.getElementById('file-name');
-            const fileSize = document.getElementById('file-size');
-            const progressContainer = document.getElementById('progress-container');
-            const progressBar = document.getElementById('progress-bar');
-            const progressText = document.getElementById('progress-text');
-            const alertSuccess = document.getElementById('alert-success');
-            const alertError = document.getElementById('alert-error');
-            const alertWarning = document.getElementById('alert-warning');
-            const results = document.getElementById('results');
-            const addedCount = document.getElementById('added-count');
-            const updatedCount = document.getElementById('updated-count');
-            const errorCount = document.getElementById('error-count');
-            const errorContainer = document.getElementById('error-container');
-            const errorList = document.getElementById('error-list');
-            const downloadTemplateBtn = document.getElementById('download-template');
-
-            // File drag-and-drop processing
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, preventDefaults, false);
-            });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            // Visual feedback when dragging in and out
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => {
-                    uploadArea.classList.add('highlight');
-                }, false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => {
-                    uploadArea.classList.remove('highlight');
-                }, false);
-            });
-
-            // Handle file dragging and dropping
-            uploadArea.addEventListener('drop', handleDrop, false);
-
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-
-                if (files.length) {
-                    fileInput.files = files;
-                    handleFile(files[0]);
-                }
-            }
-
-            // Click to select the file
-            selectFileBtn.addEventListener('click', () => {
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                if (fileInput.files.length) {
-                    handleFile(fileInput.files[0]);
-                }
-            });
-
-            // Process the selected file
-            function handleFile(file) {
-                // Check the file type
-                if (!file.name.endsWith('.csv')) {
-                    showAlert(alertError, 'Please upload the CSV file');
-                    return;
-                }
-
-                // Display file information
-                fileName.textContent = file.name;
-                fileSize.textContent = formatFileSize(file.size);
-                fileInfo.style.display = 'block';
-
-                // Hide the previous results and warnings
-                resetAlerts();
-                results.style.display = 'none';
-            }
-
-            // File size formatting
-            function formatFileSize(bytes) {
-                if (bytes === 0) return '0 Bytes';
-
-                const k = 1024;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-            }
-
-            // Upload a file
-            uploadBtn.addEventListener('click', () => {
-                if (!fileInput.files.length) {
-                    showAlert(alertError, 'Please select the CSV file first');
-                    return;
-                }
-
-                const file = fileInput.files[0];
-                uploadFile(file);
-            });
-
-            // Handle file uploads
-            function uploadFile(file) {
-                // Create a FormData object
-                const formData = new FormData();
-                formData.append('file', file);
-
-                // Create an XMLHttpRequest object
-                const xhr = new XMLHttpRequest();
-
-                // Display the progress bar and reset
-                progressContainer.style.display = 'block';
-                progressBar.style.width = '0%';
-                progressText.textContent = '上传中... 0%';
-
-                // Reset prompts and results
-                resetAlerts();
-                results.style.display = 'none';
-
-                // Upload progress
-                xhr.upload.addEventListener('progress', (e) => {
-                    if (e.lengthComputable) {
-                        const percentComplete = Math.round((e.loaded / e.total) * 100);
-                        progressBar.style.width = percentComplete + '%';
-                        progressText.textContent = `Pass on... ${percentComplete}%`;
-                    }
-                });
-
-                // Upload completed
-                xhr.addEventListener('load', () => {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        const response = JSON.parse(xhr.responseText);
-
-                        if (response.success) {
-                            showAlert(alertSuccess, response.message);
-                            displayResults(response);
-                        } else if (response.error) {
-                            showAlert(alertError, response.error);
-                        }
-                    } else {
-                        showAlert(alertError, `The upload failed and the server returned the status code: ${xhr.status}`);
-                    }
-
-                    setTimeout(() => {
-                        progressContainer.style.display = 'none';
-                    }, 2000);
-                });
-
-                xhr.addEventListener('error', () => {
-                    showAlert(alertError, 'An error occurred during the upload process. Please check the network connection');
-                    progressContainer.style.display = 'none';
-                });
-
-                xhr.addEventListener('abort', () => {
-                    showAlert(alertWarning, 'The upload has been cancelled.');
-                    progressContainer.style.display = 'none';
-                });
-                xhr.open('POST', '/upload', true);
-                xhr.send(formData);
-            }
-
-            function displayResults(data) {
-                addedCount.textContent = data.added || 0;
-                updatedCount.textContent = data.updated || 0;
-
-                if (data.error_details && data.error_details.length > 0) {
-                    errorCount.textContent = data.error_details.length;
-                    errorContainer.style.display = 'block';
-
-                    errorList.innerHTML = '';
-
-                    data.error_details.forEach(error => {
-                        const li = document.createElement('li');
-                        li.textContent = error;
-                        errorList.appendChild(li);
-                    });
-
-                    if (data.warnings) {
-                        showAlert(alertWarning, data.warnings);
-                    }
-                } else {
-                    errorCount.textContent = '0';
-                    errorContainer.style.display = 'none';
-                }
-
-
-                results.style.display = 'block';
-            }
-
-
-            function showAlert(element, message) {
-                element.textContent = message;
-                element.style.display = 'block';
-
-                if (element === alertSuccess) {
-                    setTimeout(() => {
-                        element.style.display = 'none';
-                    }, 5000);
-                }
-            }
-
-            function resetAlerts() {
-                alertSuccess.style.display = 'none';
-                alertError.style.display = 'none';
-                alertWarning.style.display = 'none';
-            }
-
-            downloadTemplateBtn.addEventListener('click', () => {
-                window.location.href = '/download-template';
-            });
-        });
-    </script>
-</body>
-</html>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

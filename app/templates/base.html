@@ -72,7 +72,7 @@
       <li class="dropdown">
         <button class="dropdown-btn">Games</button>
         <ul class="dropdown-content">
-          <li><a href="#">League of Legends</a></li>
+          <li><a href="#" class="protected-link" data-url="{{ url_for('upload_bp.upload_file') }}">League of Legends</a></li>
           <li><a href="#">Valorant</a></li>
           <li><a href="#">PUBG</a></li>
           <li><a href="#">APEX</a></li>
@@ -92,6 +92,7 @@
   
   <script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
   <script src="{{ url_for('static', filename='js/userSearch.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 
 </body>
 </html>
