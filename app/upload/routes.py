@@ -83,7 +83,7 @@ def process_csv(df):
                     'kills': int(row.get('kills', 0)),
                     'deaths': int(row.get('deaths', 0)),
                     'assists': int(row.get('assists', 0)),
-                    'kda': float(row.get('kda', 0.0)),
+                    'kda': round((int(row.get('kills', 0)) + int(row.get('assists', 0))) / int(row.get('deaths', 1)), 1) if int(row.get('deaths', 1)) > 0 else int(row.get('kills', 0)) + int(row.get('assists', 0)),
                     'team': row.get('team')
                 }
 
