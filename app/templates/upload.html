@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <header class="upload-header">
+      <h1>Game Data Upload</h1>
+      <p class="subtitle">Upload a CSV file to import game and player data into the database.</p>
+  </header>
+
+    
+    <div class="card">
+        <h2>CSV File Upload</h2>
+        <div class="upload-container">
+            <div id="upload-area" class="upload-area">
+                 <i class="material-icons">upload</i>
+                    <p class="upload-text">Drag the CSV file here or click to select the file</p>
+                    <input type="file" id="file-input" class="file-input" accept=".csv">
+                    <button class="btn btn-upload" id="select-file-btn">Select File</button>
+                </div>
+
+                <div id="file-info" class="file-info">
+                    <p><span class="material-icons">description</span> Selected File: <span id="file-name" class="file-name"></span></p>
+                    <p class="file-size">Size: <span id="file-size"></span></p>
+                    <button class="btn" id="upload-btn">Upload</button>
+                </div>
+
+                <div id="progress-container" class="progress-container">
+                    <div class="progress"><div id="progress-bar" class="progress-bar"></div></div>
+                    <p id="progress-text" class="progress-text">Uploading... 0%</p>
+                </div>
+
+                <div id="alert-success" class="alert alert-success"></div>
+                <div id="alert-error" class="alert alert-error"></div>
+                <div id="alert-warning" class="alert alert-warning"></div>
+
+                <div id="results" class="results">
+                    <h3>Import Results</h3>
+                    <div class="stats">
+                        <div class="stat-item added"><h4>Games Added</h4><div id="added-count" class="stat-value">0</div></div>
+                        <div class="stat-item updated"><h4>Games Updated</h4><div id="updated-count" class="stat-value">0</div></div>
+                        <div class="stat-item errors"><h4>Errors</h4><div id="error-count" class="stat-value">0</div></div>
+                    </div>
+
+                    <div id="error-container" style="display: none;">
+                        <h4>Error Details:</h4>
+                        <ul id="error-list" class="error-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>CSV File Format Requirements</h2>
+            <p>The uploaded CSV must include the following fields:</p>
+            <table>
+                <thead>
+                    <tr><th>Column</th><th>Description</th><th>Required</th><th>Data Type</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>game_id</td><td>Game Unique Identifier</td><td>Yes</td><td>Integer</td></tr>
+                    <tr><td>date_played</td><td>Date of the game</td><td>Yes</td><td>Date (YYYY-MM-DD)</td></tr>
+                    <tr><td>game_duration</td><td>Game duration</td><td>Yes</td><td>Time (HH:MM:SS)</td></tr>
+                    <tr><td>winning_team</td><td>Winning team</td><td>Yes</td><td>String</td></tr>
+                    <tr><td>league_username</td><td>LoL username</td><td>Yes</td><td>String</td></tr>
+                    <tr><td>champion</td><td>Champion used</td><td>Yes</td><td>String</td></tr>
+                    <tr><td>kills</td><td>Kills</td><td>Yes</td><td>Integer</td></tr>
+                    <tr><td>deaths</td><td>Deaths</td><td>Yes</td><td>Integer</td></tr>
+                    <tr><td>assists</td><td>Assists</td><td>Yes</td><td>Integer</td></tr>
+                    <tr><td>team</td><td>Player's team</td><td>Yes</td><td>String</td></tr>
+                </tbody>
+            </table>
+
+            <div class="template-section">
+                <h3>Download Template</h3>
+                <p>Need help formatting? Use our CSV template:</p>
+                <button class="btn" id="download-template">Download CSV Template</button>
+            </div>
+        </div>
+    
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}
