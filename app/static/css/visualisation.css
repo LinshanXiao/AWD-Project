@@ -1,8 +1,7 @@
 
 /* The following is code specifically for VISUALISATION */
   .main-container {
-    margin-left: 250px;
-    margin-top: 70px;
+
     height: 580px;
     background-color: black;
     padding: 20px;
@@ -31,7 +30,7 @@
   }
 
   .secondary-container {
-    margin-left: 250px;
+ 
     height: 580px;
     background-color: #1f2937;
     border-bottom: 30px solid #0c1117;
@@ -42,10 +41,28 @@
     justify-content: center; 
   }
 
-  .data-container {
-    margin: 20px;
+  .data-container-1 {
+    margin-right: 10px;
+    margin-left: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
     height: 500px;
-    width: 33%;
+    width: 50%;
+    border: black solid 2px;
+    border-radius: 10px;
+    background-color: #111827;
+
+  }
+
+  .data-container-2 {
+    margin-right: 30px;
+    margin-left: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    height: 500px;
+    width: 50%;
     border: black solid 2px;
     border-radius: 10px;
     background-color: #111827;
@@ -71,5 +88,123 @@
     padding-right: 30px;
 
   }
+
+  .overall-win-rate {
+    height: 70px; 
+    width: 90%; 
+    background-color: white;
+    margin: auto;
+    margin-top: 20px;
+    display: flex; 
+    border-radius: 20px;
+    border: rgb(197, 16, 16) solid 2px;
+    overflow: hidden; 
+}
+
+.overall-win-rate-left,
+.overall-win-rate-right {
+    flex: 1; 
+    height: 100%; 
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}
+
+.overall-win-rate-left {
+    background-color: #0c1117; 
+}
+
+.overall-win-rate-right {
+    background-color: #1f2937;
+    border-left: 2px solid red;
+}
+
+
+.overall-win-rate-right h1 {
+    color: white; 
+    font-size: 1.5rem; 
+    margin: 0; 
+}
+
+.overall-win-rate-left h1 {
+    color: white; 
+    font-size: 1.5rem; 
+    margin: 0; 
+}
+
+.previous-game-scores {
+  flex-direction: column;
+  height: 370px; 
+  width: 90%; 
+  background-color: #1f2937;
+  margin: auto;
+  margin-top: 20px;
+  display: flex; 
+  border-radius: 20px;
+  border: rgb(197, 16, 16) solid 2px;
+  overflow: hidden;
+  margin-bottom: 20px; 
+}
+
+.previous-game-title-box {
+  height: 50px; 
+  min-height: 50px; 
+  max-height: 50px; 
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  background-color: #0c1117;
+  border-bottom: 2px solid rgb(197, 16, 16);
+  box-sizing: border-box; 
+}
+
+.previous-game-title-box h1 {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.table-div {
+  height: 300px;
+  width: 100%; /* Ensure the div itself fills the parent container */
+  overflow-x: auto; /* Add horizontal scrolling if the table content exceeds the width */
+}
+
+.previous-game-table {
+  width: 100%; /* Make the table fill the width of the parent div */
+  height: 300px; /* Set the height of the table to 300px */
+  border-collapse: collapse; /* Remove gaps between table cells */
+  text-align: center; /* Center-align text in table cells */
+  overflow: hidden; /* Prevent content from overflowing */
+}
+
+.previous-game-table th,
+.previous-game-table td {
+  border: 1px solid rgb(77, 7, 7); /* Add borders to table cells */
+  padding: 10px; /* Add padding inside cells */
+}
+
+.previous-game-table th {
+  background-color: #0c1117; /* Header background color */
+  color: white;
+  font-size: 1.2rem;
+}
+
+.previous-game-table td {
+  background-color: #1f2937; /* Cell background color */
+  color: white;
+  font-size: 1rem;
+}
+
+.bottom-container-prev-games {
+  height: 20px; 
+  min-height: 20px; 
+  max-height: 20px;
+  background-color: #0c1117;
+
+}
+
+
+
+
 
  
