@@ -1,9 +1,13 @@
 from flask import render_template, session, redirect, url_for, flash,request,jsonify
-from app.models import User,Friendship 
+from app.models import User,Friendship,League_Game_Player,League_Game_Instance
 from app.main import main_bp
 from flask_login import login_required, current_user
 from app import db
+from datetime import datetime
+from sqlalchemy.orm import joinedload
+from collections import defaultdict
 import sqlalchemy as sa
+
 
 @main_bp.route('/')
 def index():
@@ -24,7 +28,103 @@ def profile():
 @main_bp.route('/visualisation')
 @login_required
 def visualisation():
-    return render_template('visualisation.html')
+
+
+    player_games = (
+        League_Game_Player.query
+        .filter_by(league_username=current_user.league_username)
+        .join(League_Game_Instance)
+        .order_by(League_Game_Instance.date_played.desc())
+        .all()
+    )
+
+    if not player_games:
+        flash("You have no game data yet. Try uploading first.")
+
+    # create game record data
+    rows = []
+    wins = 0
+    for pg in player_games:
+        game = pg.game
+        result = 'Win' if pg.team == game.winning_team else 'Loss'
+        if result == 'Win':
+            wins += 1
+        score = f"{pg.kills or 0}-{pg.deaths or 0}-{pg.assists or 0}"
+        date = game.date_played.strftime('%d/%m/%y')
+        time = game.game_duration.strftime('%H:%M:%S')
+        rows.append({
+            'result': result,
+            'champion': pg.champion,
+            'score': score,
+            'date': date,
+            'time': time
+        })
+
+    total = len(player_games)
+    win_rate = round((wins / total) * 100, 1) if total > 0 else 0
+
+    return render_template(
+        'visualisation.html',
+        rows=rows,
+        total_wins=wins,
+        win_rate=win_rate
+    )
+
+
+@main_bp.route('/visualisation/data')
+@login_required
+def visualisation_data():
+    # Get all player entries for the current user
+    player_games = (
+        League_Game_Player.query
+        .filter_by(league_username=current_user.league_username)
+        .join(League_Game_Instance)
+        .options(joinedload(League_Game_Player.game))
+        .order_by(League_Game_Instance.date_played.asc())
+        .all()
+    )
+    print(f"DEBUG: Found {len(player_games)} games for user {current_user.league_username}")
+    print(f"[DEBUG] current_user: {current_user.username}, league_username: {current_user.league_username}")
+    print(f"[DEBUG] Number of player_games: {len(player_games)}")
+    for pg in player_games:
+            print(f"[DEBUG] pg.champion: {pg.champion}, pg.game: {pg.game}, team: {pg.team}, winning_team: {pg.game.winning_team}")
+
+
+    # Prepare data for charts
+    score_labels = []
+    score_data = []
+    champion_stats = defaultdict(lambda: {'wins': 0, 'total': 0})
+
+    for pg in player_games:
+        game = pg.game
+        if not game:
+            continue
+
+        # Line chart data (score over time)
+        score = (pg.kills or 0) + (pg.assists or 0) - (pg.deaths or 0)
+        label = game.date_played.strftime('%Y-%m-%d')
+        score_labels.append(label)
+        score_data.append(score)
+
+        # Bar chart data (win rate per champion)
+        champion_stats[pg.champion]['total'] += 1
+        if pg.team == game.winning_team:
+            champion_stats[pg.champion]['wins'] += 1
+
+    # Convert champion stats to Chart.js format
+    champion_names = list(champion_stats.keys())
+    win_rates = [
+        round((champion_stats[c]['wins'] / champion_stats[c]['total']) * 100, 1)
+        for c in champion_names
+    ]
+
+    return jsonify({
+        'score_labels': score_labels,
+        'scores': score_data,
+        'champion_names': champion_names,
+        'win_rates': win_rates
+    })
+
 
 
 

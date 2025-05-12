@@ -1,3 +1,15 @@
+/* an alert if there's no game data yet */
+.flash-container {
+  margin: 1rem 0;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
 
 /* The following is code specifically for VISUALISATION */
   .main-container {

@@ -30,6 +30,8 @@ class League_Game_Instance(db.Model):
     users: so.WriteOnlyMapped[list['User']] = so.relationship(
         back_populates="league_games", secondary="league_game_player"
     )
+    players: so.Mapped[list['League_Game_Player']] = so.relationship(
+    back_populates="game")
 
 class League_Game_Player(db.Model):
     __tablename__ = "league_game_player"
@@ -46,6 +48,11 @@ class League_Game_Player(db.Model):
     assists: so.Mapped[int] = so.mapped_column(nullable=False)
     kda: so.Mapped[float] = so.mapped_column(nullable=False)
     team: so.Mapped[str] = so.mapped_column(sa.String(150), nullable=False)
+
+    game: so.Mapped['League_Game_Instance'] = so.relationship(
+    back_populates="players")
+
+
 
 class Friendship(db.Model):
     __tablename__ = "friendship"
