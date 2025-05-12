@@ -6,6 +6,8 @@ import os
 import tempfile
 from app.models import League_Game_Instance, League_Game_Player
 from app import db
+from app.forms import ManualUploadForm
+from flask import json
 
 upload_bp = Blueprint('upload_bp', __name__, url_prefix='/upload')
 
@@ -120,3 +122,68 @@ def process_csv(df):
 def download_template():
     template_path = os.path.join(current_app.root_path, 'static', 'template.csv')
     return send_file(template_path, as_attachment=True, download_name='game_template.csv')
+
+@upload_bp.route('/manual', methods=['POST'])
+@login_required
+def manual_upload():
+    form = ManualUploadForm(data=request.json)
+
+    # if validation didn't went throgh, it will give an alert 
+    if not form.validate():
+        errors = {field: ', '.join(msgs) for field, msgs in form.errors.items()}
+        return jsonify({'error': 'Validation failed', 'details': errors}), 400
+
+    try:
+        # 🎮 Game instance data procesesing
+        game = League_Game_Instance.query.get(form.game_id.data)
+        if game:
+            game.date_played = form.date_played.data
+            game.game_duration = form.game_duration.data
+            game.winning_team = form.winning_team.data
+        else:
+            game = League_Game_Instance(
+                game_id=form.game_id.data,
+                date_played=form.date_played.data,
+                game_duration=form.game_duration.data,
+                winning_team=form.winning_team.data
+            )
+            db.session.add(game)
+
+        # 👤 player info data processing
+        player = League_Game_Player.query.get((form.league_username.data, form.game_id.data))
+        k = form.kills.data or 0
+        d = form.deaths.data or 1
+        a = form.assists.data or 0
+        kda = round((k + a) / d, 1) if d != 0 else k + a
+
+        player_data = {
+            'champion': form.champion.data,
+            'kills': k,
+            'deaths': d,
+            'assists': a,
+            'kda': kda,
+            'team': form.team.data
+        }
+
+        if player:
+            for key, val in player_data.items():
+                setattr(player, key, val)
+        else:
+            new_player = League_Game_Player(
+                league_username=form.league_username.data,
+                game_id=form.game_id.data,
+                **player_data
+            )
+            db.session.add(new_player)
+
+        # 💾 try submit the data 
+        try:
+            db.session.commit()
+        except Exception as db_error:
+            db.session.rollback()
+            return jsonify({'error': f'Database error: {str(db_error)}'}), 500
+
+        return jsonify({'message': 'Manual upload successful'}), 200
+
+    except Exception as e:
+        return jsonify({'error': f'Upload failed: {str(e)}'}), 500

@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Element references
+    // --- DOM elements ---
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
     const selectFileBtn = document.getElementById('select-file-btn');
@@ -10,9 +10,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const progressContainer = document.getElementById('progress-container');
     const progressBar = document.getElementById('progress-bar');
     const progressText = document.getElementById('progress-text');
-    const alertSuccess = document.getElementById('alert-success');
-    const alertError = document.getElementById('alert-error');
-    const alertWarning = document.getElementById('alert-warning');
+    const csvAlertSuccess = document.getElementById('csv-alert-success');
+    const csvAlertError = document.getElementById('csv-alert-error');
+    const csvAlertWarning = document.getElementById('csv-alert-warning');
     const results = document.getElementById('results');
     const addedCount = document.getElementById('added-count');
     const updatedCount = document.getElementById('updated-count');
@@ -21,42 +21,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const errorList = document.getElementById('error-list');
     const downloadTemplateBtn = document.getElementById('download-template');
 
-    // File drag events
+    // --- drag csvfile into the section processing ---
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, preventDefaults, false);
+        uploadArea.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, false);
     });
 
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
     ['dragenter', 'dragover'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, () => {
-            uploadArea.classList.add('highlight');
-        }, false);
+        uploadArea.addEventListener(eventName, () => uploadArea.classList.add('highlight'), false);
     });
 
     ['dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, () => {
-            uploadArea.classList.remove('highlight');
-        }, false);
+        uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('highlight'), false);
     });
 
     uploadArea.addEventListener('drop', handleDrop, false);
 
     function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
+        const files = e.dataTransfer.files;
         if (files.length) {
             fileInput.files = files;
             handleFile(files[0]);
         }
     }
 
-    selectFileBtn.addEventListener('click', () => {
-        fileInput.click();
-    });
+    selectFileBtn.addEventListener('click', () => fileInput.click());
 
     fileInput.addEventListener('change', () => {
         if (fileInput.files.length) {
@@ -66,29 +57,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function handleFile(file) {
         if (!file.name.endsWith('.csv')) {
-            showAlert(alertError, 'Please upload a CSV file');
+            showAlert(csvAlertError, 'Please upload a CSV file');
             return;
         }
-
         fileName.textContent = file.name;
         fileSize.textContent = formatFileSize(file.size);
         fileInfo.style.display = 'block';
-
-        resetAlerts();
+        resetAlerts(csvAlertSuccess, csvAlertError, csvAlertWarning);
         results.style.display = 'none';
     }
 
     function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     uploadBtn.addEventListener('click', () => {
         if (!fileInput.files.length) {
-            showAlert(alertError, 'Please select a CSV file');
+            showAlert(csvAlertError, 'Please select a CSV file');
             return;
         }
         uploadFile(fileInput.files[0]);
@@ -103,50 +90,45 @@ document.addEventListener('DOMContentLoaded', function () {
         progressBar.style.width = '0%';
         progressText.textContent = 'Uploading... 0%';
 
-        resetAlerts();
+        resetAlerts(csvAlertSuccess, csvAlertError, csvAlertWarning);
         results.style.display = 'none';
 
-        xhr.upload.addEventListener('progress', (e) => {
+        xhr.upload.addEventListener('progress', e => {
             if (e.lengthComputable) {
-                const percentComplete = Math.round((e.loaded / e.total) * 100);
-                progressBar.style.width = percentComplete + '%';
-                progressText.textContent = `Uploading... ${percentComplete}%`;
+                const percent = Math.round((e.loaded / e.total) * 100);
+                progressBar.style.width = percent + '%';
+                progressText.textContent = `Uploading... ${percent}%`;
             }
         });
 
-        xhr.addEventListener('load', () => {
+        xhr.onload = () => {
+            const response = JSON.parse(xhr.responseText);
             if (xhr.status >= 200 && xhr.status < 300) {
-                const response = JSON.parse(xhr.responseText);
-
                 if (response.message) {
-                    showAlert(alertSuccess, response.message);
+                    showAlert(csvAlertSuccess, response.message);
                     displayResults(response);
-                } else if (response.error) {
-                    showAlert(alertError, response.error);
+                    fileInput.value = '';
+                    fileInfo.style.display = 'none';
+                } else {
+                    showAlert(csvAlertError, response.error || 'Unknown error');
                 }
-
-                // Optional: redirect to /visualisation after success
-                // setTimeout(() => { window.location.href = '/visualisation'; }, 2500);
-
             } else {
-                showAlert(alertError, `Upload failed. Status: ${xhr.status}`);
+                showAlert(csvAlertError, `Upload failed. Status: ${xhr.status}`);
             }
-            setTimeout(() => {
-                progressContainer.style.display = 'none';
-            }, 2000);
-        });
+            setTimeout(() => progressContainer.style.display = 'none', 2000);
+        };
 
-        xhr.addEventListener('error', () => {
-            showAlert(alertError, 'Network error during upload.');
+        xhr.onerror = () => {
+            showAlert(csvAlertError, 'Network error during upload.');
             progressContainer.style.display = 'none';
-        });
+        };
 
-        xhr.addEventListener('abort', () => {
-            showAlert(alertWarning, 'Upload was cancelled.');
+        xhr.onabort = () => {
+            showAlert(csvAlertWarning, 'Upload was cancelled.');
             progressContainer.style.display = 'none';
-        });
+        };
 
-        xhr.open('POST', '/upload', true);
+        xhr.open('POST', '/upload');
         xhr.send(formData);
     }
 
@@ -167,28 +149,72 @@ document.addEventListener('DOMContentLoaded', function () {
             errorCount.textContent = '0';
             errorContainer.style.display = 'none';
         }
-
         results.style.display = 'block';
-    }
-
-    function showAlert(element, message) {
-        element.textContent = message;
-        element.style.display = 'block';
-
-        if (element === alertSuccess) {
-            setTimeout(() => {
-                element.style.display = 'none';
-            }, 5000);
-        }
-    }
-
-    function resetAlerts() {
-        alertSuccess.style.display = 'none';
-        alertError.style.display = 'none';
-        alertWarning.style.display = 'none';
     }
 
     downloadTemplateBtn.addEventListener('click', () => {
         window.location.href = '/upload/download-template';
     });
+
+    // --- manually input logic  ---
+    const manualForm = document.getElementById('manual-form');
+    const manualAlertSuccess = document.getElementById('manual-alert-success');
+    const manualAlertError = document.getElementById('manual-alert-error');
+
+    if (manualForm) {
+        manualForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = {
+                game_id: document.getElementById("game_id").value,
+                date_played: document.getElementById("date_played").value,
+                game_duration: document.getElementById("game_duration").value,
+                winning_team: document.getElementById("winning_team").value,
+                league_username: document.getElementById("league_username").value,
+                champion: document.getElementById("champion").value,
+                kills: document.getElementById("kills").value,
+                deaths: document.getElementById("deaths").value,
+                assists: document.getElementById("assists").value,
+                team: document.getElementById("team").value
+            };
+
+            resetAlerts(manualAlertSuccess, manualAlertError);
+
+            fetch("/upload/manual", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+                .then(res => res.json().then(data => ({ status: res.status, body: data })))
+                .then(result => {
+                    if (result.status === 200) {
+                        showAlert(manualAlertSuccess, result.body.message || "Upload successful!");
+                        manualForm.reset();
+                    } else {
+                        const details = result.body.details || result.body.error;
+                        if (typeof details === "object") {
+                            const formatted = Object.entries(details)
+                                .map(([k, v]) => `${k}: ${v}`).join('\n');
+                            showAlert(manualAlertError, `Upload failed:\n${formatted}`);
+                        } else {
+                            showAlert(manualAlertError, `Upload failed: ${details}`);
+                        }
+                    }
+                })
+                .catch(err => showAlert(manualAlertError, `Unexpected error: ${err}`));
+        });
+    }
+
+    // --- shared alter function, both for upload csv file and input data---
+    function showAlert(element, message) {
+        element.textContent = message;
+        element.style.display = 'block';
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, 5000);
+    }
+
+    function resetAlerts(...elements) {
+        elements.forEach(el => el && (el.style.display = 'none'));
+    }
 });
