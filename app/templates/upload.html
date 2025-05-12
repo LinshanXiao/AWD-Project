@@ -37,51 +37,109 @@
                 <div id="alert-error" class="alert alert-error"></div>
                 <div id="alert-warning" class="alert alert-warning"></div>
 
+                <!-- Upload + File Info + Progress + Alerts... -->
                 <div id="results" class="results">
                     <h3>Import Results</h3>
                     <div class="stats">
-                        <div class="stat-item added"><h4>Games Added</h4><div id="added-count" class="stat-value">0</div></div>
-                        <div class="stat-item updated"><h4>Games Updated</h4><div id="updated-count" class="stat-value">0</div></div>
-                        <div class="stat-item errors"><h4>Errors</h4><div id="error-count" class="stat-value">0</div></div>
+                        <div class="stat-item added">
+                            <h4>Games Added</h4>
+                            <div id="added-count" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-item updated">
+                            <h4>Games Updated</h4>
+                            <div id="updated-count" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-item errors">
+                            <h4>Errors</h4>
+                            <div id="error-count" class="stat-value">0</div>
+                        </div>
                     </div>
 
                     <div id="error-container" style="display: none;">
                         <h4>Error Details:</h4>
                         <ul id="error-list" class="error-list"></ul>
                     </div>
-                </div>
+                </div> 
+
+                
+
             </div>
         </div>
-
-        <div class="card">
-            <h2>CSV File Format Requirements</h2>
-            <p>The uploaded CSV must include the following fields:</p>
-            <table>
-                <thead>
-                    <tr><th>Column</th><th>Description</th><th>Required</th><th>Data Type</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>game_id</td><td>Game Unique Identifier</td><td>Yes</td><td>Integer</td></tr>
-                    <tr><td>date_played</td><td>Date of the game</td><td>Yes</td><td>Date (YYYY-MM-DD)</td></tr>
-                    <tr><td>game_duration</td><td>Game duration</td><td>Yes</td><td>Time (HH:MM:SS)</td></tr>
-                    <tr><td>winning_team</td><td>Winning team</td><td>Yes</td><td>String</td></tr>
-                    <tr><td>league_username</td><td>LoL username</td><td>Yes</td><td>String</td></tr>
-                    <tr><td>champion</td><td>Champion used</td><td>Yes</td><td>String</td></tr>
-                    <tr><td>kills</td><td>Kills</td><td>Yes</td><td>Integer</td></tr>
-                    <tr><td>deaths</td><td>Deaths</td><td>Yes</td><td>Integer</td></tr>
-                    <tr><td>assists</td><td>Assists</td><td>Yes</td><td>Integer</td></tr>
-                    <tr><td>team</td><td>Player's team</td><td>Yes</td><td>String</td></tr>
-                </tbody>
-            </table>
-
+        
+        <div class="card"> 
             <div class="template-section">
                 <h3>Download Template</h3>
                 <p>Need help formatting? Use our CSV template:</p>
                 <button class="btn" id="download-template">Download CSV Template</button>
             </div>
+
         </div>
-    
-</div>
+
+        <div class="container mt-5">
+            <div class="card shadow">
+              <div class="card-body">
+                <h3 class="card-title mb-4">Upload a CSV? Nah, we're going manual—like a true challenger. 💪</h3>
+          
+                <form id="manual-form">
+                  <div class="mb-3">
+                    <label for="game_id" class="form-label">Game ID:</label>
+                    <input type="text" class="form-control" id="game_id" name="game_id" placeholder="Please enter game_id" required>
+                  </div>
+          
+                  <div class="mb-3">
+                    <label for="date_played" class="form-label">Date Played (YYYY-MM-DD):</label>
+                    <input type="date" class="form-control" id="date_played" name="date_played" required>
+                  </div>
+          
+                  <div class="mb-3">
+                    <label for="game_duration" class="form-label">Game Duration (HH:MM:SS):</label>
+                    <input type="time" class="form-control" id="game_duration" name="game_duration" step="1" required>
+                  </div>
+          
+                  <div class="mb-3">
+                    <label for="winning_team" class="form-label">Winning Team:</label>
+                    <input type="text" class="form-control" id="winning_team" name="winning_team" placeholder="Please enter winning_team" required>
+                  </div>
+          
+                  <div class="mb-3">
+                    <label for="league_username" class="form-label">League Username:</label>
+                    <input type="text" class="form-control" id="league_username" name="league_username" placeholder="Please enter league_username" required>
+                  </div>
+          
+                  <div class="mb-3">
+                    <label for="champion" class="form-label">Champion:</label>
+                    <input type="text" class="form-control" id="champion" name="champion" placeholder="Please enter champion" required>
+                  </div>
+          
+                  <div class="mb-3">
+                    <label for="kills" class="form-label">Kills:</label>
+                    <input type="text" class="form-control" id="kills" name="kills" placeholder="Please enter kills" required>
+                  </div>
+          
+                  <div class="mb-3">
+                    <label for="deaths" class="form-label">Deaths:</label>
+                    <input type="text" class="form-control" id="deaths" name="deaths" placeholder="Please enter deaths" required>
+                  </div>
+          
+                  <div class="mb-3">
+                    <label for="assists" class="form-label">Assists:</label>
+                    <input type="text" class="form-control" id="assists" name="assists" placeholder="Please enter assists" required>
+                  </div>
+          
+                  <div class="mb-4">
+                    <label for="team" class="form-label">Team:</label>
+                    <input type="text" class="form-control" id="team" name="team" placeholder="Please enter team" required>
+                  </div>
+          
+                  <!-- ✅ Submit Button -->
+                  <button type="submit" class="btn btn-success w-100">
+                    Submit Entered Data
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          
 {% endblock %}
 
 {% block scripts %}

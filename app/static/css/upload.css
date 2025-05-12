@@ -276,7 +276,7 @@ h2 {
     padding: 15px;
     background-color: #fff;
     border-radius: var(--border-radius);
-    border: 1px dashed #ccc;
+    border: 1px #ccc;
 }
 
 .file-info {
@@ -318,28 +318,22 @@ h2 {
     vertical-align: middle;
 }
 
-/* Table */
-table {
+/* input bars */
+
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+input {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+    padding: 8px;
+    box-sizing: border-box;
 }
 
-th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-}
-
-th {
-    background-color: #f5f5f5;
-    font-weight: 600;
-    color: var(--dark-color);
-}
-
-tr:hover {
-    background-color: #f9f9f9;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
