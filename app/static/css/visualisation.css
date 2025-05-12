@@ -179,11 +179,12 @@
   height: 300px;
   width: 100%; /* Ensure the div itself fills the parent container */
   overflow-x: auto; /* Add horizontal scrolling if the table content exceeds the width */
+  overflow-y: auto; /* allow vertical scrolling so user can see more data*/
 }
 
 .previous-game-table {
   width: 100%; /* Make the table fill the width of the parent div */
-  height: 300px; /* Set the height of the table to 300px */
+  height: auto; /* Set the height of the table to 300px */
   border-collapse: collapse; /* Remove gaps between table cells */
   text-align: center; /* Center-align text in table cells */
   overflow: hidden; /* Prevent content from overflowing */

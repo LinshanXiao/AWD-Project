@@ -28,8 +28,6 @@ def profile():
 @main_bp.route('/visualisation')
 @login_required
 def visualisation():
-
-
     player_games = (
         League_Game_Player.query
         .filter_by(league_username=current_user.league_username)
@@ -59,6 +57,8 @@ def visualisation():
             'date': date,
             'time': time
         })
+        print(f"[DEBUG] Number of rows: {len(rows)}")
+
 
     total = len(player_games)
     win_rate = round((wins / total) * 100, 1) if total > 0 else 0
@@ -69,6 +69,7 @@ def visualisation():
         total_wins=wins,
         win_rate=win_rate
     )
+
 
 
 @main_bp.route('/visualisation/data')
@@ -83,12 +84,6 @@ def visualisation_data():
         .order_by(League_Game_Instance.date_played.asc())
         .all()
     )
-    print(f"DEBUG: Found {len(player_games)} games for user {current_user.league_username}")
-    print(f"[DEBUG] current_user: {current_user.username}, league_username: {current_user.league_username}")
-    print(f"[DEBUG] Number of player_games: {len(player_games)}")
-    for pg in player_games:
-            print(f"[DEBUG] pg.champion: {pg.champion}, pg.game: {pg.game}, team: {pg.team}, winning_team: {pg.game.winning_team}")
-
 
     # Prepare data for charts
     score_labels = []
@@ -107,9 +102,11 @@ def visualisation_data():
         score_data.append(score)
 
         # Bar chart data (win rate per champion)
-        champion_stats[pg.champion]['total'] += 1
+        champ = (pg.champion or 'Unknown').strip().lower()
+        champion_stats[champ]['total'] += 1
         if pg.team == game.winning_team:
-            champion_stats[pg.champion]['wins'] += 1
+            champion_stats[champ]['wins'] += 1
+        
 
     # Convert champion stats to Chart.js format
     champion_names = list(champion_stats.keys())
