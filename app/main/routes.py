@@ -1,5 +1,5 @@
 from flask import render_template, session, redirect, url_for, flash,request,jsonify
-from app.models import User, Friendship, LeagueGame
+from app.models import User, Friendship, LeagueGame, FriendRequest
 from app.main import main_bp
 from flask_login import login_required, current_user
 from app import db
@@ -117,8 +117,6 @@ def visualisation(league_username):
 
 
 
-
-
 @main_bp.route('/api/search_user')
 @login_required
 def search_user():
@@ -136,6 +134,7 @@ def search_user():
     else:
         return jsonify({'found': False})
 
+
 @main_bp.route('/add_friend', methods=['POST'])
 @login_required
 def add_friend():
@@ -148,25 +147,31 @@ def add_friend():
     if current_user.id == friend_id:
         return jsonify({'message': 'You cannot add yourself!'}), 400
 
-    # check if they are friends both ways
-    existing = Friendship.query.filter(
+    # Check if they are already friends
+    existing_friendship = Friendship.query.filter(
         ((Friendship.user_id == current_user.id) & (Friendship.friend_id == friend_id)) |
         ((Friendship.user_id == friend_id) & (Friendship.friend_id == current_user.id))
     ).first()
-    if existing:
+    if existing_friendship:
         return jsonify({'message': 'You are already friends!'}), 400
+    
+    # Check if a pending friend request already exists
+    existing_request = FriendRequest.query.filter_by(sender_id=current_user.id, receiver_id=friend_id).first()
+    if existing_request:
+        return jsonify({'message': 'Friend request already sent!'}), 400
 
     # check if the user exist
     friend = User.query.get(friend_id)
     if not friend:
         return jsonify({'message': 'User not found'}), 404
 
-    # add friendship
-    new_friend = Friendship(user_id=current_user.id, friend_id=friend_id)
-    db.session.add(new_friend)
+    # Create a new friend request
+    new_request = FriendRequest(sender_id=current_user.id, receiver_id=friend_id)
+    db.session.add(new_request)
     db.session.commit()
 
-    return jsonify({'message': f'Add {friend.username} Successfully, you are friends now!'}), 200
+    return jsonify({'message': f'Friend request sent to {friend.username}!'}), 200
+
 
 @main_bp.route('/account_settings', methods=['GET', 'POST'])
 @login_required
@@ -200,3 +205,82 @@ def account_settings():
         return redirect(url_for('main_bp.account_settings'))
 
     return render_template('account_settings.html', user=current_user)
+
+
+@main_bp.route('/accept_friend', methods=['POST'])
+@login_required
+def accept_friend():
+    data = request.get_json()
+    request_id = data.get('request_id')
+
+    if not request_id:
+        return jsonify({'message': 'Missing request ID'}), 400
+
+    # Find the friend request
+    friend_request = FriendRequest.query.get(request_id)
+    if not friend_request:
+        return jsonify({'message': 'Friend request not found'}), 404
+
+    # Ensure the current user is the receiver of the request
+    if friend_request.receiver_id != current_user.id:
+        return jsonify({'message': 'You are not authorized to accept this request'}), 403
+
+    # Add the friendship both ways
+    new_friendship_1 = Friendship(user_id=current_user.id, friend_id=friend_request.sender_id)
+    new_friendship_2 = Friendship(user_id=friend_request.sender_id, friend_id=current_user.id)
+    db.session.add(new_friendship_1)
+    db.session.add(new_friendship_2)
+
+    # Remove the pending friend request
+    db.session.delete(friend_request)
+    db.session.commit()
+
+    return jsonify({'message': 'Friend request accepted!'}), 200
+
+
+
+@main_bp.route('/decline_friend', methods=['POST'])
+@login_required
+def decline_friend():
+    data = request.get_json()
+    request_id = data.get('request_id')
+
+    if not request_id:
+        return jsonify({'message': 'Missing request ID'}), 400
+
+    # Find the friend request
+    friend_request = FriendRequest.query.get(request_id)
+    if not friend_request:
+        return jsonify({'message': 'Friend request not found'}), 404
+
+    # Ensure the current user is the receiver of the request
+    if friend_request.receiver_id != current_user.id:
+        return jsonify({'message': 'You are not authorized to decline this request'}), 403
+
+    # Remove the pending friend request
+    db.session.delete(friend_request)
+    db.session.commit()
+
+    return jsonify({'message': 'Friend request declined!'}), 200
+
+
+
+@main_bp.route('/notifications')
+@login_required
+def notifications():
+    # Get pending friend requests
+    friend_requests = FriendRequest.query.filter_by(receiver_id=current_user.id).all()
+
+    # Get current friends
+    current_friends = [
+        {"name": friend.username}
+        for friend in User.query.join(Friendship, Friendship.friend_id == User.id)
+        .filter(Friendship.user_id == current_user.id)
+        .all()
+    ]
+
+    return render_template(
+        'notification_page.html',
+        friend_requests=friend_requests,
+        current_friends=current_friends
+    )
