@@ -24,24 +24,41 @@ def profile():
 
 
 
-@main_bp.route('/visualisation')
+@main_bp.route('/visualisation/<league_username>')
 @login_required
-def visualisation():
+def visualisation(league_username):
+
+    user = User.query.filter_by(league_username=league_username).first()
+    if not user:
+        flash("User not found.", "danger")
+        return redirect(url_for('main_bp.home'))
+    
+    # Ensure the user is either the current user or a friend
+    if user.id != current_user.id:
+        is_friend = Friendship.query.filter(
+            ((Friendship.user_id == current_user.id) & (Friendship.friend_id == user.id)) |
+            ((Friendship.user_id == user.id) & (Friendship.friend_id == current_user.id))
+        ).first()
+        if not is_friend:
+            flash("You do not have permission to view this user's data.", "danger")
+            return redirect(url_for('main_bp.home'))
+
+    
     # Get the user's game data
     games = (
         LeagueGame.query
-        .filter_by(user_id=current_user.id)
+        .filter_by(league_username=league_username)
         .order_by(LeagueGame.date_played.desc())
         .all()
     )
 
     if not games:
         flash("You have no game data yet. Try uploading first.")
+        return redirect(url_for('main_bp.home'))
+    
 
     rows = []
     wins = 0
-
-    # collect data for the table and charts
     champion_counts = defaultdict(int)
     win_counts = defaultdict(int)
     total_counts = defaultdict(int)
@@ -94,7 +111,8 @@ def visualisation():
         win_rate=win_rate,
         champion_counts=dict(champion_counts),
         win_rates=win_rates,
-        radar_data=radar_data  # ✅ pass to template
+        radar_data=radar_data,
+        user=user  # ✅ pass to template
     )
 
 
