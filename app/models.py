@@ -56,3 +56,15 @@ class Friendship(db.Model):
     __table_args__ = (
         sa.UniqueConstraint('user_id', 'friend_id', name='unique_friendship'),
     )
+
+
+class FriendRequest(db.Model):
+    __tablename__ = "friend_request"
+
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, autoincrement=True)
+    sender_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'), nullable=False)
+    receiver_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'), nullable=False)
+
+    __table_args__ = (
+        sa.UniqueConstraint('sender_id', 'receiver_id', name='unique_friend_request'),
+    )
