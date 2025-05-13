@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import pandas as pd
 import os
 import tempfile
-from app.models import League_Game_Instance, League_Game_Player
+from app.models import LeagueGame
 from app import db
 from app.forms import ManualUploadForm
 from flask import json

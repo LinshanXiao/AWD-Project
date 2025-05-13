@@ -1,5 +1,5 @@
 from flask import render_template, session, redirect, url_for, flash,request,jsonify
-from app.models import User,Friendship,League_Game_Player,League_Game_Instance
+from app.models import User,Friendship,LeagueGame
 from app.main import main_bp
 from flask_login import login_required, current_user
 from app import db
@@ -29,10 +29,10 @@ def profile():
 @login_required
 def visualisation():
     player_games = (
-        League_Game_Player.query
+        LeagueGame.query
         .filter_by(league_username=current_user.league_username)
-        .join(League_Game_Instance)
-        .order_by(League_Game_Instance.date_played.desc())
+        .join(LeagueGame)
+        .order_by(LeagueGame.date_played.desc())
         .all()
     )
 
