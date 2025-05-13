@@ -142,3 +142,31 @@ def manual_upload():
         db.session.rollback()
         return jsonify({'error': f'Upload failed: {str(e)}'}), 500
 
+
+
+
+# Please feel free to remove all of this stuff
+@upload_bp.route('/notifications')
+@login_required
+def notifications():
+    friend_requests = [
+        {"name": "Andy"},
+        {"name": "John"},
+        {"name": "Sarah"},
+        {"name": "Andy"},
+        {"name": "John"},
+        {"name": "Sarah"},
+        {"name": "Andy"},
+        {"name": "John"},
+        {"name": "Sarah"},
+        {"name": "Andy"},
+        {"name": "John"},
+        {"name": "Sarah"}
+    ]
+
+    current_friends = [
+        {"name": "Dirk"},
+        {"name": "Yiming"},
+        {"name": "Margot_Robbie"}
+    ]
+    return render_template('notification_page.html', friend_requests=friend_requests, current_friends=current_friends)
