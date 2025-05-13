@@ -239,6 +239,31 @@ def accept_friend():
 
 
 
+@main_bp.route('/remove_friend', methods=['POST'])
+@login_required
+def remove_friend():
+    data = request.get_json()
+    friend_id = data.get('friend_id')
+
+    if not friend_id:
+        return jsonify({'message': 'Missing friend ID'}), 400
+
+    # Find the friendship
+    friendship_1 = Friendship.query.filter_by(user_id=current_user.id, friend_id=friend_id).first()
+    friendship_2 = Friendship.query.filter_by(user_id=friend_id, friend_id=current_user.id).first()
+
+    if not friendship_1 or not friendship_2:
+        return jsonify({'message': 'Friendship not found'}), 404
+
+    # Remove the friendship both ways
+    db.session.delete(friendship_1)
+    db.session.delete(friendship_2)
+    db.session.commit()
+
+    return jsonify({'message': 'Friend removed successfully!'}), 200
+
+
+
 @main_bp.route('/decline_friend', methods=['POST'])
 @login_required
 def decline_friend():
@@ -273,7 +298,7 @@ def notifications():
 
     # Get current friends
     current_friends = [
-        {"name": friend.username}
+        {"id": friend.id, "username": friend.username}
         for friend in User.query.join(Friendship, Friendship.friend_id == User.id)
         .filter(Friendship.user_id == current_user.id)
         .all()
