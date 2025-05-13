@@ -2,105 +2,112 @@
 
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/visualisation.css') }}">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
-
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div class="flash-container">
-      {% for msg in messages %}
-        <div class="alert alert-warning">
-          {{ msg }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
 
 {% block content %}
-<div class="main-container">
-    <!-- Champion Win Rate Chart -->
-    <div class="champion-win-rates">
-        <canvas id="myChart" width="450" height="450"></canvas>
+<main class="main-container">
+
+    
+    <script type="application/json" id="chart-data">
+  {
+    "championCounts": {{ champion_counts | tojson | safe }},
+    "winRates": {{ win_rates | tojson | safe }},
+    "radarData": {{ radar_data | tojson | safe }}
+  }
+</script>
+
+
+    
+    <div class="secondary-container">
+
+        
+        <div class="data-container-1"> 
+            <div class="overall-win-rate">
+                <div class="overall-win-rate-left">
+                    <h1> Win Rate </h1>
+                </div>
+                <div class="overall-win-rate-right">
+                    <h1> {{ win_rate }}% </h1> 
+                </div>
+            </div>
+
+            <div class="previous-game-scores">
+                <div class="previous-game-title-box">
+                    <h1>Previous Game Results</h1>
+                </div>
+
+                <div class="table-div">
+                    <table class="previous-game-table">
+                        <thead>
+                            <tr>
+                                <th>Result</th>
+                                <th>Champion</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                            <tr>
+                                <td>{{ row.result }}</td>
+                                <td>{{ row.champion }}</td>
+                                <td>{{ row.score }}</td>
+                                <td>{{ row.date }}</td>
+                                <td>{{ row.time }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5">No data available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="bottom-container-prev-games"></div>
+            </div>
+        </div>
+
+        <!-- Total Wins -->
+        <div class="data-container-2"> 
+            <div class="overall-win-rate">
+                <div class="overall-win-rate-left">
+                    <h1> Total Wins </h1>
+                </div>
+                <div class="overall-win-rate-right">
+                    <h1> {{ total_wins }} </h1> 
+                </div>
+            </div>
+
+            <div class="previous-game-scores">
+                <div class="previous-game-title-box">
+                    <h1>Previous Game Results</h1>
+                </div>
+                <div class="radar-chart-container">
+                <h2>Performance Radar </h2>
+                <canvas id="performanceRadar"></canvas>
+                </div>
+                
+                <div class="bottom-container-prev-games"></div>
+                
+            </div>
+            
+        </div>
     </div>
-</div>
 
-<div class="secondary-container">
-    <!-- Data Container 1 -->
-    <div class="data-container-1"> 
-        <div class="overall-win-rate">
-            <div class="overall-win-rate-left">
-                <h1> Win Rate </h1>
-            </div>
-            <div class="overall-win-rate-right">
-                <h1> {{ win_rate }}% </h1> <!-- Optional: can be dynamic -->
-            </div>
-        </div>
+    
+    <div class="charts-section">
+        <h2>Champion Usage</h2>
+        <canvas id="championBarChart"></canvas>
 
-        <div class="previous-game-scores">
-            <div class="previous-game-title-box">
-                <h1> Previous Game Results </h1>
-            </div>
-
-            <div class="table-div">
-                <table class="previous-game-table">
-                    <thead>
-                        <tr>
-                            <th>Result</th>
-                            <th>Champion</th>
-                            <th>Score</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in rows %}
-                        <tr>
-                            <td>{{ row.result }}</td>
-                            <td>{{ row.champion }}</td>
-                            <td>{{ row.score }}</td>
-                            <td>{{ row.date }}</td>
-                            <td>{{ row.time }}</td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="5">No data available.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="bottom-container-prev-games"></div>
-        </div>
+        <h2>Champion Win Rates</h2>
+        <canvas id="championPieChart"></canvas>
     </div>
 
-    <!-- Data Container 2 -->
-    <div class="data-container-2"> 
-        <div class="overall-win-rate">
-            <div class="overall-win-rate-left">
-                <h1> Total Wins </h1>
-            </div>
-            <div class="overall-win-rate-right">
-                <h1>  {{ total_wins }} </h1> 
-            </div>
-        </div>
-
-        <div class="previous-game-scores">
-            <div class="previous-game-title-box">
-                <h1> Progress Tracker </h1>
-            </div>
-
-            <div class="table-div">
-                <canvas id="lineChart"></canvas>
-            </div>
-
-            <div class="bottom-container-prev-games"></div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/visualisation.js') }}"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/visualisation.js') }}"></script>
+</main>
 {% endblock %}

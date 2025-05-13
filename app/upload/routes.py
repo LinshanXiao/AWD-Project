@@ -4,10 +4,9 @@ from werkzeug.utils import secure_filename
 import pandas as pd
 import os
 import tempfile
-from app.models import League_Game_Instance, League_Game_Player
+from app.models import LeagueGame
 from app import db
 from app.forms import ManualUploadForm
-from flask import json
 
 upload_bp = Blueprint('upload_bp', __name__, url_prefix='/upload')
 
@@ -16,6 +15,7 @@ ALLOWED_EXTENSIONS = {'csv'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 @upload_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def upload_file():
@@ -23,167 +23,122 @@ def upload_file():
         return render_template('upload.html')
 
     if 'file' not in request.files:
-        return jsonify({'error': 'There is no file section'}), 400
+        return jsonify({'error': 'No file part in the request'}), 400
 
     file = request.files['file']
     if file.filename == '':
-        return jsonify({'error': 'File not selected'}), 400
+        return jsonify({'error': 'No selected file'}), 400
 
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        temp_file = tempfile.NamedTemporaryFile(delete=False)
-        file.save(temp_file.name)
-
+        #  use secure_filename to sanitize the filename
+        temp_fd, temp_path = tempfile.mkstemp()
         try:
-            df = pd.read_csv(temp_file.name)
+            with os.fdopen(temp_fd, 'wb') as f:
+                f.write(file.read())  #  write the file to a temporary location
+
+            # read the CSV file
+            with open(temp_path, 'r', encoding='utf-8') as f:
+                df = pd.read_csv(f)
+
             result = process_csv(df)
             return jsonify(result), 200
-        except Exception as e:
-            return jsonify({'error': f'An error occurred when processing CSV:: {str(e)}'}), 500
-        finally:
-            os.unlink(temp_file.name)
 
-    return jsonify({'error': 'Unsupported file types'}), 400
+        except Exception as e:
+            return jsonify({'error': f'Error processing CSV: {str(e)}'}), 500
+
+        finally:
+            try:
+                os.remove(temp_path)
+            except Exception as unlink_err:
+                print(f"⚠️ Failed to delete temp file: {unlink_err}")
+
+    return jsonify({'error': 'Unsupported file type'}), 400
+
 
 
 def process_csv(df):
-    added_game, updated_game = 0, 0
-    added_player, updated_player = 0, 0
-    errors = []
+    added, errors = 0, []
 
     for i, row in df.iterrows():
         try:
-            game_id = int(row['game_id'])
-            date_played = pd.to_datetime(row['date_played'])
-            game_duration = pd.to_datetime(row['game_duration']).time()
-            winning_team = row['winning_team']
+            k = int(row.get('kills', 0))
+            d = int(row.get('deaths', 1))
+            a = int(row.get('assists', 0))
+            kda = round((k + a) / d, 1) if d > 0 else k + a
 
-            # game example processing 
-            game = League_Game_Instance.query.get(game_id)
-            if game:
-                game.date_played = date_played
-                game.game_duration = game_duration
-                game.winning_team = winning_team
-                updated_game += 1
-            else:
-                new_game = League_Game_Instance(
-                    game_id=game_id,
-                    date_played=date_played,
-                    game_duration=game_duration,
-                    winning_team=winning_team
-                )
-                db.session.add(new_game)
-                added_game += 1
+            new_record = LeagueGame(
+                user_id=current_user.id,
+                game_id=int(row['game_id']),
+                date_played=pd.to_datetime(row['date_played']),
+                game_duration=str(row['game_duration']),
+                winning_team=row['winning_team'],
+                league_username=row['league_username'],
+                champion=row['champion'],
+                kills=k,
+                deaths=d,
+                assists=a,
+                kda=kda,
+                team=row['team']
+            )
 
-            # players data processing if exists 
-            if 'league_username' in row and pd.notna(row['league_username']):
-                league_username = row['league_username']
-                player = League_Game_Player.query.get((league_username, game_id))
-
-                player_data = {
-                    'champion': row.get('champion'),
-                    'kills': int(row.get('kills', 0)),
-                    'deaths': int(row.get('deaths', 0)),
-                    'assists': int(row.get('assists', 0)),
-                    'kda': round((int(row.get('kills', 0)) + int(row.get('assists', 0))) / int(row.get('deaths', 1)), 1) if int(row.get('deaths', 1)) > 0 else int(row.get('kills', 0)) + int(row.get('assists', 0)),
-                    'team': row.get('team')
-                }
-
-                if player:
-                    for key, val in player_data.items():
-                        setattr(player, key, val)
-                    updated_player += 1
-                else:
-                    new_player = League_Game_Player(
-                        league_username=league_username,
-                        game_id=game_id,
-                        **player_data
-                    )
-                    db.session.add(new_player)
-                    added_player += 1
-
+            db.session.add(new_record)
+            added += 1
         except Exception as e:
-            errors.append(f"Number of {i+2}row has error: {str(e)}")
+            errors.append(f"[Row {i+2}] {str(e)}")
             continue
 
     db.session.commit()
 
     return {
-        'message': 'Upload Successful',
-        'games_added': added_game,
-        'games_updated': updated_game,
-        'players_added': added_player,
-        'players_updated': updated_player,
+        'message': 'Upload completed.',
+        'rows_added': added,
         'errors': errors
     }
+
 
 @upload_bp.route('/download-template')
 @login_required
 def download_template():
     template_path = os.path.join(current_app.root_path, 'static', 'template.csv')
-    return send_file(template_path, as_attachment=True, download_name='game_template.csv')
+    return send_file(template_path, as_attachment=True, download_name='template.csv')
+
 
 @upload_bp.route('/manual', methods=['POST'])
 @login_required
 def manual_upload():
     form = ManualUploadForm(data=request.json)
 
-    # if validation didn't went throgh, it will give an alert 
     if not form.validate():
         errors = {field: ', '.join(msgs) for field, msgs in form.errors.items()}
         return jsonify({'error': 'Validation failed', 'details': errors}), 400
 
     try:
-        # 🎮 Game instance data procesesing
-        game = League_Game_Instance.query.get(form.game_id.data)
-        if game:
-            game.date_played = form.date_played.data
-            game.game_duration = form.game_duration.data
-            game.winning_team = form.winning_team.data
-        else:
-            game = League_Game_Instance(
-                game_id=form.game_id.data,
-                date_played=form.date_played.data,
-                game_duration=form.game_duration.data,
-                winning_team=form.winning_team.data
-            )
-            db.session.add(game)
-
-        # 👤 player info data processing
-        player = League_Game_Player.query.get((form.league_username.data, form.game_id.data))
         k = form.kills.data or 0
         d = form.deaths.data or 1
         a = form.assists.data or 0
-        kda = round((k + a) / d, 1) if d != 0 else k + a
+        kda = round((k + a) / d, 1) if d > 0 else k + a
 
-        player_data = {
-            'champion': form.champion.data,
-            'kills': k,
-            'deaths': d,
-            'assists': a,
-            'kda': kda,
-            'team': form.team.data
-        }
+        new_record = LeagueGame(
+            user_id=current_user.id,
+            game_id=form.game_id.data,
+            date_played=form.date_played.data,
+            game_duration=str(form.game_duration.data),
+            winning_team=form.winning_team.data,
+            league_username=form.league_username.data,
+            champion=form.champion.data,
+            kills=k,
+            deaths=d,
+            assists=a,
+            kda=kda,
+            team=form.team.data
+        )
 
-        if player:
-            for key, val in player_data.items():
-                setattr(player, key, val)
-        else:
-            new_player = League_Game_Player(
-                league_username=form.league_username.data,
-                game_id=form.game_id.data,
-                **player_data
-            )
-            db.session.add(new_player)
-
-        # 💾 try submit the data 
-        try:
-            db.session.commit()
-        except Exception as db_error:
-            db.session.rollback()
-            return jsonify({'error': f'Database error: {str(db_error)}'}), 500
+        db.session.add(new_record)
+        db.session.commit()
 
         return jsonify({'message': 'Manual upload successful'}), 200
 
     except Exception as e:
+        db.session.rollback()
         return jsonify({'error': f'Upload failed: {str(e)}'}), 500
+
