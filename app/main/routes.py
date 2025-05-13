@@ -72,13 +72,31 @@ def visualisation():
 
 
 
-@main_bp.route('/visualisation/data')
+@main_bp.route('/visualisation/<username>')
 @login_required
-def visualisation_data():
+def visualisation_data(username):
     # Get all player entries for the current user
+    if username != current_user.username:
+        # Check if the username is a friend of the current user
+        is_friend = db.session.query(Friendship).filter(
+            (Friendship.user_id == current_user.id) & 
+            (Friendship.friend_id == User.query.filter_by(username=username).first().id)
+        ).first()
+
+        if not is_friend:
+            flash("You do not have permission to view this user's data.", "danger")
+            return redirect(url_for('main_bp.home'))
+        
+
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        flash("User not found.", "danger")
+        return redirect(url_for('main_bp.home'))
+    
+
     player_games = (
         League_Game_Player.query
-        .filter_by(league_username=current_user.league_username)
+        .filter_by(league_username=user.league_username)
         .join(League_Game_Instance)
         .options(joinedload(League_Game_Player.game))
         .order_by(League_Game_Instance.date_played.asc())
@@ -108,19 +126,13 @@ def visualisation_data():
             champion_stats[champ]['wins'] += 1
         
 
-    # Convert champion stats to Chart.js format
-    champion_names = list(champion_stats.keys())
-    win_rates = [
-        round((champion_stats[c]['wins'] / champion_stats[c]['total']) * 100, 1)
-        for c in champion_names
-    ]
-
-    return jsonify({
-        'score_labels': score_labels,
-        'scores': score_data,
-        'champion_names': champion_names,
-        'win_rates': win_rates
-    })
+    return render_template(
+        'visualisation.html',
+        user=user,
+        score_labels=score_labels,
+        score_data=score_data,
+        champion_stats=champion_stats
+    )
 
 
 
