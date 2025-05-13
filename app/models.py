@@ -65,6 +65,7 @@ class FriendRequest(db.Model):
     sender_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'), nullable=False)
     receiver_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'), nullable=False)
 
-    __table_args__ = (
-        sa.UniqueConstraint('sender_id', 'receiver_id', name='unique_friend_request'),
-    )
+    # Relationships
+    sender: so.Mapped['User'] = so.relationship('User', foreign_keys=[sender_id], backref='sent_requests')
+    receiver: so.Mapped['User'] = so.relationship('User', foreign_keys=[receiver_id], backref='received_requests')
+    
