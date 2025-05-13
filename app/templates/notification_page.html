@@ -10,10 +10,7 @@
 
 
     <div class="left-container">  
-
-
         <div class="info-container">
-
             <div class="title-container">
                 <h1 class="title">Find Friends</h1>
             </div>
@@ -23,15 +20,14 @@
                     <button class="search-icon">🔍</button>
                     <div class="search-dropdown" id="searchResults"></div>
                 </div>
-
             </div>
             <div class="bottom-box"></div>
             
         </div>
 
 
-        <div class="info-container">
 
+        <div class="info-container">
             <div class="title-container">
                 <h1 class="title">Friend Requests</h1>
             </div>
@@ -39,15 +35,12 @@
 
             {% if friend_requests %}
                 {% for friend in friend_requests %}
-                <div class="friend-requests request-item">
-
+                <div class="friend-requests request-item" data-request-id="{{ request.id }}">
                     <div class="name-box">
-                        <h2> {{ friend.name }} </h2>
+                        <h2> {{ request.sender.username }} </h2>
                     </div>
-                    
                     <button class="accept-button" type="button">&#10003;</button>
                     <button class="decline-button" type="button">X</button>
-
                 </div>
                 {% endfor %}
             {% else %}
@@ -65,29 +58,24 @@
                     <h2> You currently have no friend requests </h2>
                 </div>   
             </div>
-
-
             <div class="bottom-box"></div>
-            
         </div>
     </div>
 
+
     <div class="right-container">
-
-
         <div class="info-container">
             <div class="title-container">
                 <h1 class="title">Current Friends</h1>
             </div>
             <div class="access-current-friends-list">
-            {% if current_friends %}
+                {% if current_friends %}
                 {% for friend in current_friends %}
-                <div class="friend-requests friend-item">
+                <div class="friend-requests friend-item" data-friend-id="{{ friend.id }}">
                     <div class="name-box">
-                        <h2 class="access-friend-name"> {{ friend.name }} </h2>
+                        <h2 class="access-friend-name"> {{ friend.username }} </h2>
                     </div>
                     <button class="unadd-button" type="button">Unadd</button>
-
                 </div>
                 {% endfor %}
             {% else %}
@@ -105,91 +93,96 @@
                     <h2> You currently have no friends </h2>
                 </div>   
             </div>
-            </div>
-
-
-
-
-
-            <div class="bottom-box"></div>
         </div>
-
-
+        <div class="bottom-box"></div>
     </div>
-
-
+    </div>
 </div>
 
 <script>
-
     document.addEventListener('click', function (event) {
         const declineButton = event.target.closest('.decline-button');
         const unaddButton = event.target.closest('.unadd-button');
         const acceptButton = event.target.closest('.accept-button');
 
-        // For removing friend requests from the current page
-        // THIS DOES NOT REMOVE FRIEND REQUESTS FROM THE DATABASE
+        // Decline Friend Request
         if (declineButton) {
-            const friendRequest = declineButton.closest('.friend-requests');
-            if (friendRequest) {
-                friendRequest.remove();
+            const requestItem = declineButton.closest('.friend-requests');
+            const requestId = requestItem.dataset.requestId;
 
-                // ✅ Correct selector: count remaining friend requests
-                const remainingRequests = document.querySelectorAll('.request-item').length;
-
-                if (remainingRequests === 0) {
-                    // If no more requests, show the "no requests" message
-                    document.getElementById('removed-all-requests').style.display = 'block';
+            fetch('/decline_friend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ request_id: requestId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    requestItem.remove();
+                    const remainingRequests = document.querySelectorAll('.request-item').length;
+                    if (remainingRequests === 0) {
+                        document.getElementById('removed-all-requests').style.display = 'block';
+                    }
                 }
-            }
+            });
         }
 
-
-        // For removing friends from the current friends current page
-        // THIS DOES NOT REMOVE FRIENDS FROM THE DATABASE
-        if (unaddButton) {
-            const friendChosen = unaddButton.closest('.friend-requests');
-            if (friendChosen) {
-                friendChosen.remove();
-
-                // Count remaining current friends
-                const remainingFriends = document.querySelectorAll('.friend-item').length;
-
-                if (remainingFriends === 0) {
-                    document.getElementById('removed-all-friends').style.display = 'block';
-                }
-            }
-        }
-
-
+        // Accept Friend Request
         if (acceptButton) {
-            const friendAccepted = acceptButton.closest('.friend-requests');
-            if (friendAccepted) {
+            const requestItem = acceptButton.closest('.friend-requests');
+            const requestId = requestItem.dataset.requestId;
 
-                const nameBox = friendAccepted.querySelector('.name-box');
-                const friendName =  nameBox.querySelector('h2').textContent;
+            fetch('/accept_friend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ request_id: requestId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    const friendName = requestItem.querySelector('.name-box h2').textContent;
+                    requestItem.remove();
+                    addFriendToList(friendName);
 
-                // Removes the friend request from the current page
-                friendAccepted.remove();
-
-                addFriendToList(friendName);
-
-                // Checks whether there are any friend requests left
-                const remainingRequests = document.querySelectorAll('.request-item').length;
-                if (remainingRequests === 0) {
-                    // If no more requests, shows a "no requests" message
-                    document.getElementById('removed-all-requests').style.display = 'block';
+                    const remainingRequests = document.querySelectorAll('.request-item').length;
+                    if (remainingRequests === 0) {
+                        document.getElementById('removed-all-requests').style.display = 'block';
+                    }
                 }
-    
-                
-            }
+            });
+        }
+
+        // Unadd Friend
+        if (unaddButton) {
+            const friendItem = unaddButton.closest('.friend-requests');
+            const friendId = friendItem.dataset.friendId;
+
+            fetch('/remove_friend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ friend_id: friendId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    friendItem.remove();
+                    const remainingFriends = document.querySelectorAll('.friend-item').length;
+                    if (remainingFriends === 0) {
+                        document.getElementById('removed-all-friends').style.display = 'block';
+                    }
+                }
+            });
         }
     });
-    
 
     function addFriendToList(friendName) {
         const parentClass = document.querySelector('.access-current-friends-list');
-
         const children = parentClass.children;
 
         if (children.length === 1 && children[0].className === 'no-friend-requests') {
@@ -199,25 +192,14 @@
         const newFriend = document.createElement('div');
         newFriend.className = 'friend-requests friend-item';
         newFriend.innerHTML = `
-                <div class="name-box">
-                    <h2 class="access-friend-name"> ${friendName} </h2>
-                </div>
-                <button class="unadd-button" type="button">Unadd</button>
+            <div class="name-box">
+                <h2 class="access-friend-name"> ${friendName} </h2>
+            </div>
+            <button class="unadd-button" type="button">Unadd</button>
         `;
 
-
-
         parentClass.appendChild(newFriend);
-
     }
-
-
-
-
-        
-
 </script>
 
-
-  
 {% endblock %}

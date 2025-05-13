@@ -79,8 +79,14 @@
           <li><a href="#">APEX</a></li>
         </ul>
       </li>
-      <li><a href="#" class="protected-link" data-url="{{ url_for('main_bp.visualisation', league_username=current_user.league_username) }}">Visualize</a></li>
-      <li><a href="#">Share</a></li>
+        <li>
+          {% if current_user.league_username %}
+              <a href="#" class="protected-link" data-url="{{ url_for('main_bp.visualisation', league_username=current_user.league_username) }}">Visualize</a>
+          {% else %}
+              <a href="{{ url_for('main_bp.home') }}" class="protected-link" onclick="alert('Please set your League username in your profile settings!')">Visualize</a>
+          {% endif %}
+        </li>
+         <li><a href="{{ url_for('main_bp.notifications') }}">Friends</a></li>
       <li><a href="#" class="protected-link" data-url="{{ url_for('main_bp.profile') }}">Profile</a></li>
       
     </ul>
