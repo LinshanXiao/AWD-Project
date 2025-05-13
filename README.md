@@ -5,12 +5,12 @@
 |----------|----------|----------|
 | 23600251   | Linshan Xiao   | LinshanXiao  |
 | 22975178   | Dirk Haasbroek | AfricanAlien |
-| 24092758   | Yiming Ding    | wizarddog61728 |
-| 23865288   | Andrew Gibson  | Vincent0301    | 
+| 24092758   | Yiming Ding    | Vincent0301 |
+| 23865288   | Andrew Gibson  | wizarddog61728    | 
 
-# GameAnalyzer 
+# GameNalyzer 
 
-**GameAnalyzer** is a game statistics web application that allows users to upload their gameplay data, visualize performance trends, and selectively share records with friends. 
+**GameNalyzer** is a game statistics web application that allows users to upload their gameplay data, visualize performance trends, and selectively share records with friends. 
 
 ## Features
 
