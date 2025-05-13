@@ -120,3 +120,30 @@ def process_csv(df):
 def download_template():
     template_path = os.path.join(current_app.root_path, 'static', 'template.csv')
     return send_file(template_path, as_attachment=True, download_name='game_template.csv')
+
+
+# Please feel free to remove all of this stuff
+@upload_bp.route('/notifications')
+@login_required
+def notifications():
+    friend_requests = [
+        {"name": "Andy"},
+        {"name": "John"},
+        {"name": "Sarah"},
+        {"name": "Andy"},
+        {"name": "John"},
+        {"name": "Sarah"},
+        {"name": "Andy"},
+        {"name": "John"},
+        {"name": "Sarah"},
+        {"name": "Andy"},
+        {"name": "John"},
+        {"name": "Sarah"}
+    ]
+
+    current_friends = [
+        {"name": "Dirk"},
+        {"name": "Yiming"},
+        {"name": "Margot_Robbie"}
+    ]
+    return render_template('notification_page.html', friend_requests=friend_requests, current_friends=current_friends)

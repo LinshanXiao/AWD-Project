@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/notification.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="main-container">
+
+
+    <div class="left-container">  
+
+
+        <div class="info-container">
+
+            <div class="title-container">
+                <h1 class="title">Find Friends</h1>
+            </div>
+            <div class="request-friends">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search users by name or ID" />
+                    <button class="search-icon">🔍</button>
+                    <div class="search-dropdown" id="searchResults"></div>
+                </div>
+
+            </div>
+            <div class="bottom-box"></div>
+            
+        </div>
+
+
+        <div class="info-container">
+
+            <div class="title-container">
+                <h1 class="title">Friend Requests</h1>
+            </div>
+            
+
+            {% if friend_requests %}
+                {% for friend in friend_requests %}
+                <div class="friend-requests request-item">
+
+                    <div class="name-box">
+                        <h2> {{ friend.name }} </h2>
+                    </div>
+                    
+                    <button class="accept-button" type="button">&#10003;</button>
+                    <button class="decline-button" type="button">X</button>
+
+                </div>
+                {% endfor %}
+            {% else %}
+                <!--This will display if the user initially has no requests-->
+                <div class="no-friend-requests">
+                    <div class="white-box">
+                        <h2> You currently have no friend requests </h2>
+                    </div>   
+                </div>
+            {% endif %}
+
+            <!--This will display if the user has deleted all their friend requests-->
+            <div class="no-friend-requests" id="removed-all-requests" style="display: none;">
+                <div class="white-box">
+                    <h2> You currently have no friend requests </h2>
+                </div>   
+            </div>
+
+
+            <div class="bottom-box"></div>
+            
+        </div>
+    </div>
+
+    <div class="right-container">
+
+
+        <div class="info-container">
+            <div class="title-container">
+                <h1 class="title">Current Friends</h1>
+            </div>
+            <div class="access-current-friends-list">
+            {% if current_friends %}
+                {% for friend in current_friends %}
+                <div class="friend-requests friend-item">
+                    <div class="name-box">
+                        <h2 class="access-friend-name"> {{ friend.name }} </h2>
+                    </div>
+                    <button class="unadd-button" type="button">Unadd</button>
+
+                </div>
+                {% endfor %}
+            {% else %}
+                <!--This will display if the user initially has no requests-->
+                <div class="no-friend-requests">
+                    <div class="white-box">
+                        <h2> You currently have no friends </h2>
+                    </div>   
+                </div>
+            {% endif %}
+
+            <!--This will display if the user has unadded all of their friends-->
+            <div class="no-friend-requests" id="removed-all-friends" style="display: none;">
+                <div class="white-box">
+                    <h2> You currently have no friends </h2>
+                </div>   
+            </div>
+            </div>
+
+
+
+
+
+            <div class="bottom-box"></div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<script>
+
+    document.addEventListener('click', function (event) {
+        const declineButton = event.target.closest('.decline-button');
+        const unaddButton = event.target.closest('.unadd-button');
+        const acceptButton = event.target.closest('.accept-button');
+
+        // For removing friend requests from the current page
+        // THIS DOES NOT REMOVE FRIEND REQUESTS FROM THE DATABASE
+        if (declineButton) {
+            const friendRequest = declineButton.closest('.friend-requests');
+            if (friendRequest) {
+                friendRequest.remove();
+
+                // ✅ Correct selector: count remaining friend requests
+                const remainingRequests = document.querySelectorAll('.request-item').length;
+
+                if (remainingRequests === 0) {
+                    // If no more requests, show the "no requests" message
+                    document.getElementById('removed-all-requests').style.display = 'block';
+                }
+            }
+        }
+
+
+        // For removing friends from the current friends current page
+        // THIS DOES NOT REMOVE FRIENDS FROM THE DATABASE
+        if (unaddButton) {
+            const friendChosen = unaddButton.closest('.friend-requests');
+            if (friendChosen) {
+                friendChosen.remove();
+
+                // Count remaining current friends
+                const remainingFriends = document.querySelectorAll('.friend-item').length;
+
+                if (remainingFriends === 0) {
+                    document.getElementById('removed-all-friends').style.display = 'block';
+                }
+            }
+        }
+
+
+        if (acceptButton) {
+            const friendAccepted = acceptButton.closest('.friend-requests');
+            if (friendAccepted) {
+
+                const nameBox = friendAccepted.querySelector('.name-box');
+                const friendName =  nameBox.querySelector('h2').textContent;
+
+                // Removes the friend request from the current page
+                friendAccepted.remove();
+
+                addFriendToList(friendName);
+
+                // Checks whether there are any friend requests left
+                const remainingRequests = document.querySelectorAll('.request-item').length;
+                if (remainingRequests === 0) {
+                    // If no more requests, shows a "no requests" message
+                    document.getElementById('removed-all-requests').style.display = 'block';
+                }
+    
+                
+            }
+        }
+    });
+    
+
+    function addFriendToList(friendName) {
+        const parentClass = document.querySelector('.access-current-friends-list');
+
+        const children = parentClass.children;
+
+        if (children.length === 1 && children[0].className === 'no-friend-requests') {
+            children[0].remove();
+        }
+
+        const newFriend = document.createElement('div');
+        newFriend.className = 'friend-requests friend-item';
+        newFriend.innerHTML = `
+                <div class="name-box">
+                    <h2 class="access-friend-name"> ${friendName} </h2>
+                </div>
+                <button class="unadd-button" type="button">Unadd</button>
+        `;
+
+
+
+        parentClass.appendChild(newFriend);
+
+    }
+
+
+
+
+        
+
+</script>
+
+
+  
+{% endblock %}
