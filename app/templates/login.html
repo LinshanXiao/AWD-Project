@@ -9,7 +9,7 @@
 <body>
     <h1 class="welcome">
         <a href="{{ url_for('main_bp.home') }}" style="text-decoration: underline; color: inherit;">
-          Welcome to GameAnalyzer
+          Welcome to GameNalyzer
         </a>
       </h1>
 
@@ -22,21 +22,27 @@
             {% endif %}
 
             <form method="POST" action="{{ url_for('auth_bp.login') }}">
+                {{ form.hidden_tag() }}
                 <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" required>
+                    {{ form.username.label }}
+                    {{ form.username(class="form-control") }}
+                    {% for error in form.username.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
                 </div>
+
                 <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
+                {{ form.password.label }}
+                {{ form.password(class="form-control") }}
+                {% for error in form.password.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
                 </div>
+
+            
+
                 <div class="form-group">
-                    <label>
-                        <input type="checkbox" name="remember"> Remember Me
-                    </label>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Login">
+                    {{ form.submit(class="btn btn-primary") }}
                 </div>
             </form>
 

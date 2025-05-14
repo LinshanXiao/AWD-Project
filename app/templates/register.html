@@ -18,27 +18,44 @@
         <div class="login-card">
             <h2>Register</h2>
             <form method="POST" action="{{ url_for('auth_bp.register') }}">
+                {{ form.hidden_tag() }}
                 <!-- Form group for username -->
                 <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" required>
+                    {{ form.username.label }}
+                    {{ form.username(class="form-control") }}
+                    {% for error in form.username.errors %}
+                    <p class="error">{{ error }}</p>
+                    {% endfor %}
                 </div>
+
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="text" id="email" name="email" required>
+                {{ form.email.label }}
+                {{ form.email(class="form-control") }}
+                {% for error in form.email.errors %}
+                <p class="error">{{ error }}</p>
+                {% endfor %}
                 </div>
+
                 <!-- Form group for password -->
                 <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
+                {{ form.password.label }}
+                {{ form.password(class="form-control") }}
+                {% for error in form.password.errors %}
+                <p class="error">{{ error }}</p>
+                {% endfor %}
                 </div>
+
                 <div class="form-group">
-                    <label for="confirmPassword">Confirm Password:</label>
-                    <input type="password" id="confirm_password" name="confirmPassword" required>
+                {{ form.confirm_password.label }}
+                {{ form.confirm_password(class="form-control") }}
+                {% for error in form.confirm_password.errors %}
+                <p class="error">{{ error }}</p>
+                {% endfor %}
                 </div>
+
                 <!-- Submit button for the form -->
                 <div class="form-group">
-                    <input type="submit" value="Register">
+                {{ form.submit(class="btn btn-primary") }}
                 </div>
             </form>
         </div>
