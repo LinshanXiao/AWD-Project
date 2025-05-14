@@ -15,13 +15,17 @@ ALLOWED_EXTENSIONS = {'csv'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
-@upload_bp.route('/', methods=['GET', 'POST'])
+# render the upload page
+@upload_bp.route('/', methods=['GET'])
 @login_required
-def upload_file():
-    if request.method == 'GET':
-        return render_template('upload.html')
+def upload_page():
+    form = ManualUploadForm()
+    return render_template('upload.html', form=form)
 
+# upload CSV file
+@upload_bp.route('/csv', methods=['POST'])
+@login_required
+def upload_csv():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part in the request'}), 400
 
@@ -29,14 +33,12 @@ def upload_file():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
 
-    if file and allowed_file(file.filename):
-        #  use secure_filename to sanitize the filename
+    if file and allowed_file(file.filename.lower()):
         temp_fd, temp_path = tempfile.mkstemp()
         try:
             with os.fdopen(temp_fd, 'wb') as f:
-                f.write(file.read())  #  write the file to a temporary location
+                f.write(file.read())
 
-            # read the CSV file
             with open(temp_path, 'r', encoding='utf-8') as f:
                 df = pd.read_csv(f)
 
@@ -54,8 +56,7 @@ def upload_file():
 
     return jsonify({'error': 'Unsupported file type'}), 400
 
-
-
+# process the CSV file
 def process_csv(df):
     added, errors = 0, []
 
@@ -95,18 +96,18 @@ def process_csv(df):
         'errors': errors
     }
 
-
+# download the template CSV file
 @upload_bp.route('/download-template')
 @login_required
 def download_template():
     template_path = os.path.join(current_app.root_path, 'static', 'template.csv')
     return send_file(template_path, as_attachment=True, download_name='template.csv')
 
-
+# manual upload form
 @upload_bp.route('/manual', methods=['POST'])
 @login_required
 def manual_upload():
-    form = ManualUploadForm(data=request.json)
+    form = ManualUploadForm(request.form)
 
     if not form.validate():
         errors = {field: ', '.join(msgs) for field, msgs in form.errors.items()}
