@@ -56,9 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function handleFile(file) {
-        if (!file.name.endsWith('.csv')) {
-            showAlert(csvAlertError, 'Please upload a CSV file');
-            return;
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+        showAlert(csvAlertError, 'Please upload a CSV file');
+        return;
         }
         fileName.textContent = file.name;
         fileSize.textContent = formatFileSize(file.size);
@@ -128,13 +128,13 @@ document.addEventListener('DOMContentLoaded', function () {
             progressContainer.style.display = 'none';
         };
 
-        xhr.open('POST', '/upload');
+        xhr.open('POST', '/upload/csv');
         xhr.send(formData);
     }
 
     function displayResults(data) {
-        addedCount.textContent = data.games_added || 0;
-        updatedCount.textContent = data.games_updated || 0;
+    addedCount.textContent = data.rows_added || 0;
+    updatedCount.textContent = 0;
 
         if (data.errors && data.errors.length > 0) {
             errorCount.textContent = data.errors.length;
