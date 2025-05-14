@@ -4,6 +4,7 @@ from wtforms.validators import DataRequired,Email, EqualTo, Length, Optional,Val
 import re
 from app.models import User
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import session
 
 # strong password validator
 def strong_password(form, field):
@@ -41,6 +42,7 @@ class RegisterForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[
         DataRequired(), EqualTo('password', message="Passwords must match.")
     ])
+    verification_code = StringField('Verification Code', validators=[DataRequired()])
     submit = SubmitField('Register')
 
     # username need to be unique
@@ -52,6 +54,13 @@ class RegisterForm(FlaskForm):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError("Email already registered.")
+    
+    def validate_verification_code(self, field):
+        if field.data != session.get('email_verification_code'):
+            raise ValidationError("Invalid verification code.")
+        if self.email.data != session.get('email_verification_target'):
+            raise ValidationError("This code does not match the email.")
+
 
 class ManualUploadForm(FlaskForm):
     game_id = IntegerField('Game ID', validators=[DataRequired()])

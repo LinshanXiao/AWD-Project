@@ -1,10 +1,11 @@
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash,request,jsonify
 from flask_login import login_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from app.models import User
 from app.auth import auth_bp
 from app.forms import LoginForm, RegisterForm
+from app.utils.email_utils import send_verification_code
 
 # Login route
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -36,6 +37,17 @@ def register():
         flash("Registration successful! Please log in.")
         return redirect(url_for('auth_bp.login'))
     return render_template("register.html", form=form)
+
+from app.utils.email_utils import send_verification_code
+
+@auth_bp.route('/send-verification', methods=['POST'])
+def send_verification():
+    email = request.form.get('email')
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+
+    send_verification_code(email)
+    return jsonify({'message': 'Verification code sent.'}), 200
 
 # Logout route
 @auth_bp.route('/logout')

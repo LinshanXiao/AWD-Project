@@ -12,54 +12,83 @@
     <!-- Back Button -->
     <a href="{{ url_for('auth_bp.login') }}" class="back-button">Back</a>
 
-
     <div class="container">
-        <!-- Login card containing the form -->
         <div class="login-card">
             <h2>Register</h2>
             <form method="POST" action="{{ url_for('auth_bp.register') }}">
                 {{ form.hidden_tag() }}
-                <!-- Form group for username -->
+
+                <!-- Username -->
                 <div class="form-group">
                     {{ form.username.label }}
                     {{ form.username(class="form-control") }}
                     {% for error in form.username.errors %}
-                    <p class="error">{{ error }}</p>
+                        <p class="error">{{ error }}</p>
                     {% endfor %}
                 </div>
 
+                <!-- Email + Send Code Button -->
                 <div class="form-group">
-                {{ form.email.label }}
-                {{ form.email(class="form-control") }}
-                {% for error in form.email.errors %}
-                <p class="error">{{ error }}</p>
-                {% endfor %}
+                    {{ form.email.label }}
+                    <div style="display: flex; gap: 10px;">
+                        {{ form.email(class="form-control", id="email") }}
+                        <button type="button" class="btn btn-secondary" id="send-code">Send Code</button>
+                    </div>
+                    {% for error in form.email.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
                 </div>
 
-                <!-- Form group for password -->
+                <!-- Verification Code -->
                 <div class="form-group">
-                {{ form.password.label }}
-                {{ form.password(class="form-control") }}
-                {% for error in form.password.errors %}
-                <p class="error">{{ error }}</p>
-                {% endfor %}
+                    {{ form.verification_code.label }}
+                    {{ form.verification_code(class="form-control") }}
+                    {% for error in form.verification_code.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
                 </div>
 
+                <!-- Password -->
                 <div class="form-group">
-                {{ form.confirm_password.label }}
-                {{ form.confirm_password(class="form-control") }}
-                {% for error in form.confirm_password.errors %}
-                <p class="error">{{ error }}</p>
-                {% endfor %}
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control") }}
+                    {% for error in form.password.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
                 </div>
 
-                <!-- Submit button for the form -->
+                <!-- Confirm Password -->
                 <div class="form-group">
-                {{ form.submit(class="btn btn-primary") }}
+                    {{ form.confirm_password.label }}
+                    {{ form.confirm_password(class="form-control") }}
+                    {% for error in form.confirm_password.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-primary") }}
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Script for sending verification code -->
+    <script>
+    document.getElementById('send-code').addEventListener('click', () => {
+        const email = document.getElementById('email').value;
+        fetch("{{ url_for('auth_bp.send_verification') }}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'email=' + encodeURIComponent(email)
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || data.error);
+        });
+    });
+    </script>
 </body>
 
 </html>
