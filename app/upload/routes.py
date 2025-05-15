@@ -107,39 +107,50 @@ def download_template():
 @upload_bp.route('/manual', methods=['POST'])
 @login_required
 def manual_upload():
-    form = ManualUploadForm(request.form)
+    json_data = request.get_json()
 
-    if not form.validate():
+    form = ManualUploadForm(data=json_data, meta={'csrf': False})  
+
+    
+    from flask_wtf.csrf import validate_csrf
+    try:
+        csrf_token = request.headers.get('X-CSRFToken')
+        validate_csrf(csrf_token)
+    except Exception as e:
+        return jsonify({'error': 'CSRF validation failed', 'details': str(e)}), 400
+
+    if form.validate():
+        try:
+            k = form.kills.data or 0
+            d = form.deaths.data or 1
+            a = form.assists.data or 0
+            kda = round((k + a) / d, 1) if d > 0 else k + a
+
+            new_record = LeagueGame(
+                user_id=current_user.id,
+                game_id=form.game_id.data,
+                date_played=form.date_played.data,
+                game_duration=str(form.game_duration.data),
+                winning_team=form.winning_team.data,
+                league_username=form.league_username.data,
+                champion=form.champion.data,
+                kills=k,
+                deaths=d,
+                assists=a,
+                kda=kda,
+                team=form.team.data
+            )
+
+            db.session.add(new_record)
+            db.session.commit()
+
+            return jsonify({'message': 'Manual upload successful'}), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': f'Upload failed: {str(e)}'}), 500
+    else:
         errors = {field: ', '.join(msgs) for field, msgs in form.errors.items()}
         return jsonify({'error': 'Validation failed', 'details': errors}), 400
 
-    try:
-        k = form.kills.data or 0
-        d = form.deaths.data or 1
-        a = form.assists.data or 0
-        kda = round((k + a) / d, 1) if d > 0 else k + a
-
-        new_record = LeagueGame(
-            user_id=current_user.id,
-            game_id=form.game_id.data,
-            date_played=form.date_played.data,
-            game_duration=str(form.game_duration.data),
-            winning_team=form.winning_team.data,
-            league_username=form.league_username.data,
-            champion=form.champion.data,
-            kills=k,
-            deaths=d,
-            assists=a,
-            kda=kda,
-            team=form.team.data
-        )
-
-        db.session.add(new_record)
-        db.session.commit()
-
-        return jsonify({'message': 'Manual upload successful'}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': f'Upload failed: {str(e)}'}), 500
 

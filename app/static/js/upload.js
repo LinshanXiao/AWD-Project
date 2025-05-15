@@ -180,9 +180,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             resetAlerts(manualAlertSuccess, manualAlertError);
 
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+
             fetch("/upload/manual", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken  
+                },
                 body: JSON.stringify(formData)
             })
                 .then(res => res.json().then(data => ({ status: res.status, body: data })))

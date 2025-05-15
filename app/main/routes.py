@@ -54,17 +54,18 @@ def visualisation():
         # prepare data for the table
         rows.append({
             'result': result,
-            'champion': g.champion,
+            'champion': g.champion.capitalize(),
             'score': f"{g.kills}-{g.deaths}-{g.assists}",
             'date': g.date_played.strftime('%d/%m/%y'),
             'time': g.game_duration
         })
 
         # prepare data for the charts
-        champion_counts[g.champion] += 1
-        total_counts[g.champion] += 1
+        champ = g.champion.strip().capitalize()
+        champion_counts[champ] += 1
+        total_counts[champ] += 1
         if result == 'Win':
-            win_counts[g.champion] += 1
+            win_counts[champ] += 1
 
     # win rate calculation
     win_rate = round((wins / len(games)) * 100, 1) if games else 0
@@ -73,16 +74,21 @@ def visualisation():
         for champ in total_counts
     }
 
-    # ✅ radar chart: get data from latest game
+    # ✅ radar chart: compute average stats from all games
     if games:
-        latest = games[0]
-        deaths = latest.deaths if latest.deaths != 0 else 1
+        total_kills = sum(g.kills or 0 for g in games)
+        total_deaths = sum(g.deaths or 0 for g in games)
+        total_assists = sum(g.assists or 0 for g in games)
+        total_kda = sum(((g.kills or 0) + (g.assists or 0)) / (g.deaths or 1) for g in games)
+        total_impact = sum((g.kills or 0) + (g.assists or 0) for g in games)
+        n = len(games)
+
         radar_data = {
-            'Kills': latest.kills,
-            'Deaths': max(0, 10 - latest.deaths),  # 越少越好
-            'Assists': latest.assists,
-            'KDA': round((latest.kills + latest.assists) / deaths, 2),
-            'Impact': latest.kills + latest.assists
+            'Kills': round(total_kills / n, 1),
+            'Deaths': round(max(0, 10 - (total_deaths / n)), 1),  
+            'Assists': round(total_assists / n, 1),
+            'KDA': round(total_kda / n, 2),
+            'Impact': round(total_impact / n, 1)
         }
     else:
         radar_data = {}
@@ -94,8 +100,9 @@ def visualisation():
         win_rate=win_rate,
         champion_counts=dict(champion_counts),
         win_rates=win_rates,
-        radar_data=radar_data  # ✅ pass to template
+        radar_data=radar_data
     )
+
 
 
 

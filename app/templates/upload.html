@@ -73,34 +73,40 @@
   </div>
 
   <!-- manually input section -->
-  <div class="container mt-5">
-    <div class="card shadow">
-      <div class="card-body">
-        <h3 class="card-title mb-4">Upload a CSV? Nah, we're going manual—like a true challenger. 💪</h3>
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-body">
+      <h3 class="card-title mb-4">Upload a CSV? Nah, we're going manual—like a true challenger. 💪</h3>
 
-        <form method="POST" id="manual-form">
-          {{ form.hidden_tag() }}
+      <form method="POST" id="manual-form">
+        {{ form.hidden_tag() }}
 
-          {% for field in form if field.type != 'CSRFToken' and field.type != 'SubmitField' %}
-            <div class="mb-3">
-              {{ field.label(class="form-label") }}
+        {% for field in form if field.type != 'CSRFToken' and field.type != 'SubmitField' %}
+          <div class="mb-3">
+            {{ field.label(class="form-label") }}
+
+            {% if field.name == 'game_duration' %}
+              {{ field(class="form-control", placeholder="hh:mm:ss", type="text") }}
+            {% else %}
               {{ field(class="form-control", placeholder="Please enter " + field.label.text) }}
-              {% for error in field.errors %}
-                <p class="text-danger">{{ error }}</p>
-              {% endfor %}
-            </div>
-          {% endfor %}
+            {% endif %}
 
-          {{ form.submit(class="btn btn-success w-100") }}
-        </form>
+            {% for error in field.errors %}
+              <p class="text-danger">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
 
-        <!-- manual alert -->
-        <div id="manual-alert-success" class="alert alert-success mt-3" style="display: none;"></div>
-        <div id="manual-alert-error" class="alert alert-error mt-3" style="display: none;"></div>
-      </div>
+        {{ form.submit(class="btn btn-success w-100") }}
+      </form>
+
+      <!-- manual alert -->
+      <div id="manual-alert-success" class="alert alert-success mt-3" style="display: none;"></div>
+      <div id="manual-alert-error" class="alert alert-error mt-3" style="display: none;"></div>
     </div>
   </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
