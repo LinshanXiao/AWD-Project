@@ -12,3 +12,8 @@ class Config:
     MAIL_USERNAME = 'yoyoluming124@gmail.com'
     MAIL_PASSWORD = 'jybdaerhstyiaias'
     MAIL_DEFAULT_SENDER = 'yoyoluming124@gmail.com'
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    WTF_CSRF_ENABLED = False  # disable CSRF for test posts
