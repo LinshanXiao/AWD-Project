@@ -6,11 +6,13 @@ import datetime
 def populate_users():
     # Sample data to populate the user table
     users = [
-        User(username="john_doe", password="password123", email="john@example.com", league_username="john_lol", valorant_username="john_val", PUBG_username="john_pubg", apex_username="john_apex"),
-        User(username="jane_smith", password="password123", email="jane@example.com", league_username="jane_lol", valorant_username="jane_val", PUBG_username="jane_pubg", apex_username="jane_apex"),
-        User(username="mike_ross", password="password123", email="mike@example.com", league_username="mike_lol", valorant_username="mike_val", PUBG_username="mike_pubg", apex_username="mike_apex"),
-        User(username="sarah_connor", password="password123", email="sarah@example.com", league_username="sarah_lol", valorant_username="sarah_val", PUBG_username="sarah_pubg", apex_username="sarah_apex"),
-        User(username="tony_stark", password="password123", email="tony@example.com", league_username="tony_lol", valorant_username="tony_val", PUBG_username="tony_pubg", apex_username="tony_apex"),
+        User(username="john_doe", password="password123", email="john@example.com", league_username="john_lol", valorant_username="john_val", PUBG_username="john_pubg", apex_username="john_apex", profile_image="no_profile_pic.jpg"),
+        User(username="jane_smith", password="password123", email="jane@example.com", league_username="jane_lol", valorant_username="jane_val", PUBG_username="jane_pubg", apex_username="jane_apex", profile_image="no_profile_pic.jpg"),
+        User(username="mike_ross", password="password123", email="mike@example.com", league_username="mike_lol", valorant_username="mike_val", PUBG_username="mike_pubg", apex_username="mike_apex", profile_image="no_profile_pic.jpg"),
+        User(username="sarah_connor", password="password123", email="sarah@example.com", league_username="sarah_lol", valorant_username="sarah_val", PUBG_username="sarah_pubg", apex_username="sarah_apex", profile_image="no_profile_pic.jpg"),
+        User(username="tony_stark", password="password123", email="tony@example.com", league_username="tony_lol", valorant_username="tony_val", PUBG_username="tony_pubg", apex_username="tony_apex", profile_image="no_profile_pic.jpg"),
+        # New user with only username, password, and email
+        User(username="minimal_user", password="simplepass", email="minimal@example.com", profile_image="no_profile_pic.jpg"),
     ]
 
     # Add users to the database
@@ -48,25 +50,26 @@ def populate_users():
 
     print("Friendships created successfully!")
 
-    # Create League game data
+    # Create League game data only for users with a league_username
     games = []
     for user in users:
-        for i in range(3):  # 3 games per user
-            game = LeagueGame(
-                user_id=user.id,
-                game_id=i + 1,
-                date_played=datetime.datetime.now() - datetime.timedelta(days=i),
-                game_duration=f"{30 + i}m",
-                winning_team="Blue" if i % 2 == 0 else "Red",
-                league_username=user.league_username,
-                champion=f"Champion_{i + 1}",
-                kills=5 + i,
-                deaths=3 + i,
-                assists=7 + i,
-                kda=round((5 + i + 7 + i) / (3 + i), 2),
-                team="Blue" if i % 2 == 0 else "Red",
-            )
-            games.append(game)
+        if user.league_username:  # Only generate game data for users with a league_username
+            for i in range(3):  # 3 games per user
+                game = LeagueGame(
+                    user_id=user.id,
+                    game_id=i + 1,
+                    date_played=datetime.datetime.now() - datetime.timedelta(days=i),
+                    game_duration=f"{30 + i}m",
+                    winning_team="Blue" if i % 2 == 0 else "Red",
+                    league_username=user.league_username,
+                    champion=f"Champion_{i + 1}",
+                    kills=5 + i,
+                    deaths=3 + i,
+                    assists=7 + i,
+                    kda=round((5 + i + 7 + i) / (3 + i), 2),
+                    team="Blue" if i % 2 == 0 else "Red",
+                )
+                games.append(game)
 
     db.session.add_all(games)
     db.session.commit()
@@ -75,6 +78,9 @@ def populate_users():
 
 
 if __name__ == "__main__":
-    app = create_app()  # Create the Flask application
-    with app.app_context():  # Push the application context
+    # Create the Flask app
+    app = create_app()
+
+    # Use the app context to access the database
+    with app.app_context():
         populate_users()

@@ -16,27 +16,27 @@
         <!-- Email -->
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" required>
+            <input type="email" id="email" name="email" class="form-control" value="{{ user.email}}" required>
         </div>
         <!-- League Of Legends Username -->
         <div class="form-group">
             <label for="league_username">League of Legends Username:</label>
-            <input type="text" id="league_username" name="league_username" class="form-control" value="{{ user.league_username }}">
+            <input type="text" id="league_username" name="league_username" class="form-control" value="{{ user.league_username or ''}}">
         </div>
         <!-- Apex Legends Username -->
         <div class="form-group">
             <label for="apex_username">Apex Legends Username:</label>
-            <input type="text" id="apex_username" name="apex_username" class="form-control" value="{{ user.apex_username }}">
+            <input type="text" id="apex_username" name="apex_username" class="form-control" value="{{ user.apex_username or ''}}">
         </div>
         <!-- Val Username -->
         <div class="form-group">
             <label for="valorant_username">Valorant Username:</label>
-            <input type="text" id="valorant_username" name="valorant_username" class="form-control" value="{{ user.valorant_username }}">
+            <input type="text" id="valorant_username" name="valorant_username" class="form-control" value="{{ user.valorant_username or '' }}">
         </div>
         <!-- PUBG Username -->
         <div class="form-group">
             <label for="PUBG_username">PUBG Username:</label>
-            <input type="text" id="PUBG_username" name="PUBG_username" class="form-control" value="{{ user.PUBG_username }}">
+            <input type="text" id="PUBG_username" name="PUBG_username" class="form-control" value="{{ user.PUBG_username or ''}}">
         </div>
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Save Changes</button>

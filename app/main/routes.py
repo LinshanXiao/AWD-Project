@@ -246,23 +246,22 @@ def account_settings():
         # Get form data
         username = request.form.get('username')
         email = request.form.get('email')
-        league_username = request.form.get('league_username')
-        valorant_username = request.form.get('valorant_username')
-        PUBG_username = request.form.get('PUBG_username')
-        apex_username = request.form.get('apex_username')
+        league_username = request.form.get('league_username') 
+        valorant_username = request.form.get('valorant_username') 
+        PUBG_username = request.form.get('PUBG_username') 
+        apex_username = request.form.get('apex_username') 
 
         # Update the current user's settings
-        if username:
-            current_user.username = username
-        if email:
-            current_user.email = email
-        if league_username:
+        
+        current_user.username = username
+        current_user.email = email
+        if league_username != '':
             current_user.league_username = league_username
-        if valorant_username:
+        if valorant_username != '':
             current_user.valorant_username = valorant_username
-        if PUBG_username:
+        if PUBG_username != '':
             current_user.PUBG_username = PUBG_username
-        if apex_username:
+        if apex_username != '':
             current_user.apex_username = apex_username
 
         # Save changes to the database
