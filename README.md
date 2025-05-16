@@ -10,24 +10,35 @@
 
 # GameNalyzer 
 
-**GameNalyzer** is a game statistics web application that allows users to upload their gameplay data, visualize performance trends, and selectively share records with friends. 
+**GameNalyzer** is a web application that transforms user gameplay data into clear, visual statistics, helping users track and understand their performance. It also allows users to compare their stats with others for deeper insights.
+
 
 ## Features
 
 - **User Authentication**  
-  Users can register, log in, and manage their profile.
+  Users can  register for an account login and manage their profile.
 
 - **Upload Game Data**  
-  Upload gameplay data via CSV files or input manually with structured game information.
+  Users can upload their game data by either inputting their information manually or with the use of a CSV file.
+
+- **Personalisation** 
+  You can download a profile picture to personalise your account.
+
+- **Multiple Game Support**  
+  In the account settings the user is able to input their username for multiple games such as PUBG, Valorant, Apex Legends, as well as League of Legends. They can then access these individual game statistics.
 
 - **Data Visualisation**  
-  Interactive charts and summaries of user-uploaded game data.
+  Once the website has been given the data it summarises the information into charts and graphs. These charts and graphs dynamically change when more data is provided.
 
 - **Data Sharing**  
-  Share selected matches with users from your friend list.
+  Users are able to add and accept other users as friends, allowing them to compare and view each others statistics. 
 
 - **User Profile**  
-  View your upload history.
+  Each user has a dedicated profile page summarizing their game activity, linked accounts, and performance metrics.
+
+- **Update Information** 
+  In the acccount settings users are able to change their username for each of the supported games. 
+
 
 ---
 ## Project Structure
@@ -35,27 +46,26 @@
 ├── app/
 │ ├── auth/ # Authentication blueprint
 │ ├── main/ # Main routes blueprint
-│ ├── upload/ # Upload routes blueprint
 │ ├── static/
 │ │ ├── css/
 │ │ ├── images/
 │ │ ├── js/
 │ │ └── template.csv # Sample CSV format
 │ ├── templates/ # Jinja HTML templates
-│ ├── init.py
-│ ├── config.py
-│ ├── models.py
-│ └── app.db # SQLite database file
-│
-├── Deliverables/ 
-├── tests/
-├── migrations/ # Flask-Migrate migration files
-├── run.py # Entry point for running the Flask app
-├── requirements.txt # Python dependencies
+│ ├── upload # Upload routes blueprint
+│ └── utils
+│   ├── init.py
+│   ├── config.py
+│   ├── forms.py
+│   └── models.py
+├── migrations
+├── tests
 ├── .gitignore
 ├── LICENSE
-└── README.md
-```
+├── README.md
+├── populate_users.py
+├── requirement.txt
+└── run.py
 
 ---
 ## Running the App Locally
@@ -98,7 +108,7 @@ python -m unittest discover -s tests
 python tests/system_test.py
 ```
 ## Target audience
-This project is intended for gamers who wish to track, analyze, and share their match statistics. It is also built as a practical web development assignment for CITS3403 Agile Web Development.
+This project is designed for gamers who play League of Legends, Apex Legends, PUBG, and Valorant, and want to track and analyze their in-game performance. It provides visual graphs and statistics to help users gain insights into how they’re performing over time.
 - **Note**
 - This app is intended for local use only and is not deployed online.
 - All game data is private by default unless explicitly shared by the user.
