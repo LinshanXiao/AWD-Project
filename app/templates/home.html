@@ -27,21 +27,27 @@
 <section class="games-section">
   <h2 class="section-title">Supported Games</h2>
   <div class="games-grid">
-    <div class="game-card">
-      <img src="{{ url_for('static', filename='images/apex.jpg') }}" alt="Apex Legends" class="game-image">
-      <h3 class="game-name">Apex Legends</h3>
-      <p class="game-description">Squad up and dominate the arena in Respawn's fast-paced hero shooter.</p>
-    </div>
+    <a href="https://www.ea.com/games/apex-legends/apex-legends" target="_blank" style="text-decoration: none; color: inherit;">
+  <div class="game-card">
+    <img src="{{ url_for('static', filename='images/apex.jpg') }}" alt="Apex Legends" class="game-image">
+    <h3 class="game-name">Apex Legends</h3>
+    <p class="game-description">Squad up and dominate the arena in Respawn's fast-paced hero shooter.</p>
+  </div>
+</a>
+  <a href="https://playvalorant.com/en-us/" target="_blank" style="text-decoration: none; color: inherit;">
     <div class="game-card">
       <img src="{{ url_for('static', filename='images/valorant.jpg') }}" alt="Valorant" class="game-image">
       <h3 class="game-name">Valorant</h3>
       <p class="game-description">Test your precision and strategy in Riot's acclaimed tactical shooter.</p>
     </div>
-    <div class="game-card">
+  </a>
+  <a href="https://playvalorant.com/en-us/" target="_blank" style="text-decoration: none; color: inherit;">
+  <div class="game-card">
       <img src="{{ url_for('static', filename='images/pubg.jpg') }}" alt="PUBG" class="game-image">
       <h3 class="game-name">PUBG: Battlegrounds</h3>
-      <p class="game-description">Land, loot, and survive intense battlegrounds in the original battle royale phenomenon.</p>
+      <p class="game-description">Drop in, gear up, and outlast your enemies in the original battle royale.</p>
     </div>
+  </a>
   </div>
 </section>
 
