@@ -26,10 +26,15 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
+        existing_user = User.query.filter_by(email=form.email.data.lower()).first()
+        if existing_user:
+            flash("Email is already registered. Please use a different email.", "danger")
+            return redirect(url_for('auth_bp.register'))
+
         hashed_pw = generate_password_hash(form.password.data)
         new_user = User(
             username=form.username.data.lower(),
-            email=form.email.data,
+            email=form.email.data.lower(),
             password=hashed_pw
         )
         db.session.add(new_user)
