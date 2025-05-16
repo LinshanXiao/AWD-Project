@@ -70,11 +70,21 @@
             </div>
             <div class="access-current-friends-list">
                 {% if current_friends %}
-                {% for friend in current_friends %}
-                <div class="friend-requests friend-item" data-friend-id="{{ friend.id }}">
-                    <div class="name-box">
-                        <h2 class="access-friend-name"> {{ friend.username }} </h2>
-                    </div>
+                    {% for friend in current_friends %}
+                    <div class="friend-requests friend-item" data-friend-id="{{ friend.id }}">
+                        <div class="name-box">
+                            {% if friend.league_username %}
+                            <h2 class="access-friend-name">
+                                <a href="{{ url_for('main_bp.visualisation', league_username=friend.league_username) }}">
+                                    {{ friend.username }}
+                                </a>
+                            </h2>
+                            {% else %}
+                            <h2 class="access-friend-name no-league">
+                                {{ friend.username }}
+                            </h2>
+                            {% endif %}
+                        </div>
                     <button class="unadd-button" type="button">Unadd</button>
                 </div>
                 {% endfor %}

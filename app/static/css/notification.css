@@ -260,3 +260,20 @@ body {
   border: #A52A2A 2px solid; 
 }
 
+.no-league {
+  color: gray;
+  cursor: not-allowed;
+}
+
+.no-league:hover::after {
+  content: "This user does not have a League username linked.";
+  position: absolute;
+  background-color: #f8f9fa;
+  color: #333;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+}

@@ -34,7 +34,10 @@ def visualisation(league_username):
         return redirect(url_for('main_bp.home'))
     
     # Ensure the user is either the current user or a friend
-    if user.id != current_user.id:
+    if user.id == current_user.id:
+        is_friend = True
+    
+    else:
         is_friend = Friendship.query.filter(
             ((Friendship.user_id == current_user.id) & (Friendship.friend_id == user.id)) |
             ((Friendship.user_id == user.id) & (Friendship.friend_id == current_user.id))
@@ -298,7 +301,7 @@ def notifications():
 
     # Get current friends
     current_friends = [
-        {"id": friend.id, "username": friend.username}
+        {"id": friend.id, "username": friend.username, "league_username": friend.league_username}
         for friend in User.query.join(Friendship, Friendship.friend_id == User.id)
         .filter(Friendship.user_id == current_user.id)
         .all()
