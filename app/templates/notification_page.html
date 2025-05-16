@@ -102,45 +102,39 @@
         const declineButton = event.target.closest('.decline-button');
         const unaddButton = event.target.closest('.unadd-button');
 
-        // Accept Friend Request
+        // ✅ Accept Friend Request
         if (acceptButton) {
-            const requestItem = acceptButton.closest('.friend-requests');
-            const requestId = requestItem.dataset.requestId;
+    const requestItem = acceptButton.closest('.friend-requests');
+    const requestId = requestItem.dataset.requestId;
 
-            fetch('/accept_friend', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ request_id: requestId }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    const friendName = requestItem.querySelector('.name-box h2').textContent;
+    fetch('/accept_friend', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ request_id: requestId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            requestItem.remove();
 
-                    // Remove the friend request from the list
-                    requestItem.remove();
+            
+            const friend = data.friend;
+            if (friend && friend.username) {
+                addFriendToList(friend.username, friend.league_username);
+            }
 
-                    // Add the friend to the "Current Friends" section
-                    addFriendToList(friendName);
-
-                    // Remove the "You currently have no friends" message if it exists
-                    const noFriendsMessage = document.querySelector('.no-friend-requests');
-                    if (noFriendsMessage && noFriendsMessage.parentElement.classList.contains('access-current-friends-list')) {
-                        noFriendsMessage.remove();
-                    }
-
-                    // Check if there are no more friend requests
-                    const remainingRequests = document.querySelectorAll('.request-item').length;
-                    if (remainingRequests === 0) {
-                        document.getElementById('removed-all-requests').style.display = 'block';
-                    }
-                }
-            });
+            const remainingRequests = document.querySelectorAll('.request-item').length;
+            if (remainingRequests === 0) {
+                document.getElementById('removed-all-requests').style.display = 'block';
+            }
         }
+    });
+}
 
-        // Decline Friend Request
+
+        // ❌ Decline Friend Request
         if (declineButton) {
             const requestItem = declineButton.closest('.friend-requests');
             const requestId = requestItem.dataset.requestId;
@@ -155,10 +149,8 @@
             .then(response => response.json())
             .then(data => {
                 if (data.message) {
-                    // Remove the friend request from the list
                     requestItem.remove();
 
-                    // Check if there are no more friend requests
                     const remainingRequests = document.querySelectorAll('.request-item').length;
                     if (remainingRequests === 0) {
                         document.getElementById('removed-all-requests').style.display = 'block';
@@ -167,7 +159,7 @@
             });
         }
 
-        // Unadd Friend
+        // 🔥 Unadd Friend
         if (unaddButton) {
             const friendItem = unaddButton.closest('.friend-requests');
             const friendId = friendItem.dataset.friendId;
@@ -182,10 +174,8 @@
             .then(response => response.json())
             .then(data => {
                 if (data.message) {
-                    // Remove the friend from the list
                     friendItem.remove();
 
-                    // Check if there are no more friends
                     const remainingFriends = document.querySelectorAll('.friend-item').length;
                     if (remainingFriends === 0) {
                         const noFriendsMessage = document.getElementById('no-friends');
@@ -198,22 +188,26 @@
         }
     });
 
-    function addFriendToList(friendName) {
+    // ✅ Add new friend block to list
+    function addFriendToList(friendName, leagueUsername) {
         const parentClass = document.querySelector('.access-current-friends-list');
 
-        // Remove the "no friends" message if it exists
+        // Remove "no friends" message if showing
         const noFriendsMessage = document.getElementById('no-friends');
         if (noFriendsMessage) {
-         noFriendsMessage.style.display = 'none';
+            noFriendsMessage.style.display = 'none';
         }
 
-        // Add the new friend to the list
         const newFriend = document.createElement('div');
         newFriend.className = 'friend-requests friend-item';
-        newFriend.dataset.friendId = Math.random(); // Temporary ID for DOM manipulation
+
         newFriend.innerHTML = `
             <div class="name-box">
-                <h2 class="access-friend-name"> ${friendName} </h2>
+                ${leagueUsername ? 
+                    `<h2 class="access-friend-name">
+                        <a href="/visualisation/${leagueUsername}">${friendName}</a>
+                    </h2>` :
+                    `<h2 class="access-friend-name no-league">${friendName}</h2>`}
             </div>
             <button class="unadd-button" type="button">Unadd</button>
         `;
@@ -221,5 +215,6 @@
         parentClass.appendChild(newFriend);
     }
 </script>
+
 
 {% endblock %}

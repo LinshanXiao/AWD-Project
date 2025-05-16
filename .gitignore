@@ -2,9 +2,10 @@
 
 # SQLite database file
 *.db
-*.db-journal
-*.sqlite3
-*.sqlite3-journal
+
+
+# do not ignore the test database
+!test.db
 
 
 # Local venv
