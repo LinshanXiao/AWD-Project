@@ -7,18 +7,23 @@
 {% block content %}
   <!-- Main Content for PROFILE PAGE -->
   <div class="profile-container">
-    <img src="{{ url_for('static', filename='images/no_profile_pic.jpg') }}" alt="User" class="profile_picture">
-    <div class="profile-details">
-      <div class="nameId-container">
-        <h1><strong>Username:</strong> {{ user.username }}</h1>
+      <h1>{{ user.username }}'s Profile</h1>
+
+      <!-- Display Profile Picture -->
+      <div class="profile-pic">
+          {% if user.profile_pic %}
+          <img src="{{ url_for('static', filename='uploads/profile_pics/' + user.profile_pic) }}" alt="Profile Picture">
+          {% else %}
+          <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture">
+          {% endif %}
       </div>
-      <div class="nameId-container">
-        <h1><strong>Email:</strong> {{ user.email }}</h1>
-      </div>
-      <div class="account-settings-container">
-        <a href="{{ url_for('main_bp.account_settings') }}" class="btn btn-primary">Account Settings</a>
-      </div>
-    </div>
+
+      <!-- Upload Profile Picture Form -->
+      <form action="{{ url_for('main_bp.upload_profile_pic') }}" method="POST" enctype="multipart/form-data">
+          <label for="profile_pic">Upload Profile Picture:</label>
+          <input type="file" name="profile_pic" id="profile_pic" accept="image/*">
+          <button type="submit">Upload</button>
+      </form>
   </div>
 
 

@@ -1,4 +1,4 @@
-from flask import render_template, session, redirect, url_for, flash,request,jsonify
+from flask import render_template, session, redirect, url_for, flash,request,jsonify, current_app
 from app.models import User, Friendship, LeagueGame, FriendRequest
 from app.main import main_bp
 from flask_login import login_required, current_user
@@ -6,6 +6,8 @@ from app import db
 from datetime import datetime
 from collections import defaultdict
 import sqlalchemy as sa
+from werkzeug.utils import secure_filename
+import os
 
 
 @main_bp.route('/')
@@ -321,3 +323,36 @@ def notifications():
         friend_requests=friend_requests,
         current_friends=current_friends
     )
+
+
+@main_bp.route('/upload_profile_pic', methods=['POST'])
+@login_required
+def upload_profile_pic():
+    if 'profile_pic' not in request.files:
+        flash('No file part', 'danger')
+        return redirect(url_for('main_bp.profile'))
+
+    file = request.files['profile_pic']
+    if file.filename == '':
+        flash('No selected file', 'danger')
+        return redirect(url_for('main_bp.profile'))
+
+    if file and allowed_file(file.filename):
+        # Secure the filename and save it to the uploads folder
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+
+        # Update the user's profile picture in the database
+        current_user.profile_pic = filename
+        db.session.commit()
+
+        flash('Profile picture updated successfully!', 'success')
+        return redirect(url_for('main_bp.profile'))
+    else:
+        flash('Invalid file type. Please upload an image file.', 'danger')
+        return redirect(url_for('main_bp.profile'))
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']

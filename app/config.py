@@ -13,6 +13,9 @@ class Config:
     MAIL_PASSWORD = 'jybdaerhstyiaias'
     MAIL_DEFAULT_SENDER = 'yoyoluming124@gmail.com'
 
+    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'app', 'static', 'uploads', 'profile_pics')
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'

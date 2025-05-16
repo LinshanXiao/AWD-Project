@@ -47,8 +47,13 @@
         <!-- here we got 3 notification for example, can be changed or delete afterwwards-->
       </div>
       <div class="user-dropdown">
-        <img src="{{ url_for('static', filename='images/cat.jpg') if current_user.is_authenticated else url_for('static', filename='images/no_profile_pic.jpg') }}"
- alt="User" class="avatar" id="userAvatar">
+          
+              {% if current_user.profile_pic %}
+              <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}" alt="Profile Picture" class="navbar-profile-pic">
+              {% else %}
+              <img src="{{ url_for('static', filename='images/cat.jpg') }}" alt="Default Profile Picture" class="navbar-profile-pic">
+              {% endif %}
+          
         <div class="dropdown-menu" id="dropdownMenu">
           {% if current_user.is_authenticated %}
             <p>Welcome, {{ current_user.username }}!</p>
