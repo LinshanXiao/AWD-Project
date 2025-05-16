@@ -7,139 +7,106 @@
 {% block content %}
 <div class="container">
   <header class="upload-header">
-      <h1>Game Data Upload</h1>
-      <p class="subtitle">Upload a CSV file to import game and player data into the database.</p>
+    <h1>Game Data Upload</h1>
+    <p class="subtitle">Upload a CSV file to import game and player data into the database.</p>
   </header>
 
-    
-    <div class="card">
-        <h2>CSV File Upload</h2>
-        <div class="upload-container">
-            <div id="upload-area" class="upload-area">
-                 <i class="material-icons">upload</i>
-                    <p class="upload-text">Drag the CSV file here or click to select the file</p>
-                    <input type="file" id="file-input" class="file-input" accept=".csv">
-                    <button class="btn btn-upload" id="select-file-btn">Select File</button>
-                </div>
+  <!-- csvfile upload section-->
+  <div class="card">
+    <h2>CSV File Upload</h2>
+    <div class="upload-container">
+      <div id="upload-area" class="upload-area">
+        <i class="material-icons">upload</i>
+        <p class="upload-text">Drag the CSV file here or click to select the file</p>
+        <input type="file" id="file-input" class="file-input" accept=".csv">
+        <button class="btn btn-upload" id="select-file-btn">Select File</button>
+      </div>
 
-                <div id="file-info" class="file-info">
-                    <p><span class="material-icons">description</span> Selected File: <span id="file-name" class="file-name"></span></p>
-                    <p class="file-size">Size: <span id="file-size"></span></p>
-                    <button class="btn" id="upload-btn">Upload</button>
-                </div>
+      <div id="file-info" class="file-info">
+        <p><span class="material-icons">description</span> Selected File: <span id="file-name" class="file-name"></span></p>
+        <p class="file-size">Size: <span id="file-size"></span></p>
+        <button class="btn" id="upload-btn">Upload</button>
+      </div>
 
-                <div id="progress-container" class="progress-container">
-                    <div class="progress"><div id="progress-bar" class="progress-bar"></div></div>
-                    <p id="progress-text" class="progress-text">Uploading... 0%</p>
-                </div>
+      <div id="progress-container" class="progress-container">
+        <div class="progress"><div id="progress-bar" class="progress-bar"></div></div>
+        <p id="progress-text" class="progress-text">Uploading... 0%</p>
+      </div>
 
-                <div id="alert-success" class="alert alert-success"></div>
-                <div id="alert-error" class="alert alert-error"></div>
-                <div id="alert-warning" class="alert alert-warning"></div>
+      <!-- upload complete notification -->
+      <div id="csv-alert-success" class="alert alert-success" style="display: none;"></div>
+      <div id="csv-alert-error" class="alert alert-error" style="display: none;"></div>
+      <div id="csv-alert-warning" class="alert alert-warning" style="display: none;"></div>
 
-                <!-- Upload + File Info + Progress + Alerts... -->
-                <div id="results" class="results">
-                    <h3>Import Results</h3>
-                    <div class="stats">
-                        <div class="stat-item added">
-                            <h4>Games Added</h4>
-                            <div id="added-count" class="stat-value">0</div>
-                        </div>
-                        <div class="stat-item updated">
-                            <h4>Games Updated</h4>
-                            <div id="updated-count" class="stat-value">0</div>
-                        </div>
-                        <div class="stat-item errors">
-                            <h4>Errors</h4>
-                            <div id="error-count" class="stat-value">0</div>
-                        </div>
-                    </div>
-
-                    <div id="error-container" style="display: none;">
-                        <h4>Error Details:</h4>
-                        <ul id="error-list" class="error-list"></ul>
-                    </div>
-                </div> 
-
-                
-
-            </div>
-        </div>
-        
-        <div class="card"> 
-            <div class="template-section">
-                <h3>Download Template</h3>
-                <p>Need help formatting? Use our CSV template:</p>
-                <button class="btn" id="download-template">Download CSV Template</button>
-            </div>
-
-        </div>
-
-        <div class="container mt-5">
-            <div class="card shadow">
-              <div class="card-body">
-                <h3 class="card-title mb-4">Upload a CSV? Nah, we're going manual—like a true challenger. 💪</h3>
-          
-                <form id="manual-form">
-                  <div class="mb-3">
-                    <label for="game_id" class="form-label">Game ID:</label>
-                    <input type="text" class="form-control" id="game_id" name="game_id" placeholder="Please enter game_id" required>
-                  </div>
-          
-                  <div class="mb-3">
-                    <label for="date_played" class="form-label">Date Played (YYYY-MM-DD):</label>
-                    <input type="date" class="form-control" id="date_played" name="date_played" required>
-                  </div>
-          
-                  <div class="mb-3">
-                    <label for="game_duration" class="form-label">Game Duration (HH:MM:SS):</label>
-                    <input type="time" class="form-control" id="game_duration" name="game_duration" step="1" required>
-                  </div>
-          
-                  <div class="mb-3">
-                    <label for="winning_team" class="form-label">Winning Team:</label>
-                    <input type="text" class="form-control" id="winning_team" name="winning_team" placeholder="Please enter winning_team" required>
-                  </div>
-          
-                  <div class="mb-3">
-                    <label for="league_username" class="form-label">League Username:</label>
-                    <input type="text" class="form-control" id="league_username" name="league_username" placeholder="Please enter league_username" required>
-                  </div>
-          
-                  <div class="mb-3">
-                    <label for="champion" class="form-label">Champion:</label>
-                    <input type="text" class="form-control" id="champion" name="champion" placeholder="Please enter champion" required>
-                  </div>
-          
-                  <div class="mb-3">
-                    <label for="kills" class="form-label">Kills:</label>
-                    <input type="text" class="form-control" id="kills" name="kills" placeholder="Please enter kills" required>
-                  </div>
-          
-                  <div class="mb-3">
-                    <label for="deaths" class="form-label">Deaths:</label>
-                    <input type="text" class="form-control" id="deaths" name="deaths" placeholder="Please enter deaths" required>
-                  </div>
-          
-                  <div class="mb-3">
-                    <label for="assists" class="form-label">Assists:</label>
-                    <input type="text" class="form-control" id="assists" name="assists" placeholder="Please enter assists" required>
-                  </div>
-          
-                  <div class="mb-4">
-                    <label for="team" class="form-label">Team:</label>
-                    <input type="text" class="form-control" id="team" name="team" placeholder="Please enter team" required>
-                  </div>
-          
-                  <!-- ✅ Submit Button -->
-                  <button type="submit" class="btn btn-success w-100">
-                    Submit Entered Data
-                  </button>
-                </form>
-              </div>
-            </div>
+      <div id="results" class="results" style="display: none;">
+        <h3>Import Results</h3>
+        <div class="stats">
+          <div class="stat-item added">
+            <h4>Games Added</h4>
+            <div id="added-count" class="stat-value">0</div>
           </div>
-          
+          <div class="stat-item updated">
+            <h4>Games Updated</h4>
+            <div id="updated-count" class="stat-value">0</div>
+          </div>
+          <div class="stat-item errors">
+            <h4>Errors</h4>
+            <div id="error-count" class="stat-value">0</div>
+          </div>
+        </div>
+
+        <div id="error-container" style="display: none;">
+          <h4>Error Details:</h4>
+          <ul id="error-list" class="error-list"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- download tenplate csv file -->
+  <div class="card">
+    <div class="template-section">
+      <h3>Download Template</h3>
+      <p>Need help formatting? Use our CSV template:</p>
+      <button class="btn" id="download-template">Download CSV Template</button>
+    </div>
+  </div>
+
+  <!-- manually input section -->
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-body">
+      <h3 class="card-title mb-4">Upload a CSV? Nah, we're going manual—like a true challenger. 💪</h3>
+
+      <form method="POST" id="manual-form">
+        {{ form.hidden_tag() }}
+
+        {% for field in form if field.name != 'csrf_token' and field.name != 'submit' %}
+          <div class="mb-3">
+            {{ field.label(class="form-label") }}
+
+            {% if field.name == 'game_duration' %}
+              {{ field(class="form-control", placeholder="hh:mm:ss", type="text") }}
+            {% else %}
+              {{ field(class="form-control", placeholder="Please enter " + field.label.text) }}
+            {% endif %}
+
+            {% for error in field.errors %}
+              <p class="text-danger">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        {{ form.submit(class="btn btn-success w-100") }}
+      </form>
+
+      <!-- manual alert -->
+      <div id="manual-alert-success" class="alert alert-success mt-3" style="display: none;"></div>
+      <div id="manual-alert-error" class="alert alert-error mt-3" style="display: none;"></div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}

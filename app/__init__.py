@@ -1,26 +1,25 @@
 from flask import Flask
-from app.config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_mail import Mail
+from app.config import Config, TestingConfig
 
-# Initialize extensions
+mail = Mail()
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
-login_manager.login_view = 'auth_bp.login'  #  login route endpoint
+login_manager.login_view = 'auth_bp.login'  # Redirect if not logged in
 
-def create_app():
+def create_app(config_class=Config):
     application = Flask(__name__)
-    application.config.from_object(Config)
-    application.secret_key = 'our_secret_key_here'
+    application.config.from_object(config_class)
 
-    # Bind extensions to app
     db.init_app(application)
     migrate.init_app(application, db)
     login_manager.init_app(application)
+    mail.init_app(application)
 
-    # Register blueprints
     from app.auth.routes import auth_bp
     from app.main.routes import main_bp
     from app.upload.routes import upload_bp
@@ -30,17 +29,8 @@ def create_app():
 
     return application
 
-
 from app.models import User
 
 @login_manager.user_loader
-def load_user(username):
-    return User.query.get(username)
-
-
-
-
-
-
-
-
+def load_user(user_id):  
+    return User.query.get(int(user_id))

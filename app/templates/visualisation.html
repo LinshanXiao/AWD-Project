@@ -2,233 +2,112 @@
 
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/visualisation.css') }}">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
 {% endblock %}
 
 {% block content %}
+<main class="main-container">
 
-<!-- Content specifically for VISUALISATION -->
-<div class="main-container">
-    <!-- Graph container -->
-    <div class="champion-win-rates">
-        <canvas id="myChart" width="450" height="450"></canvas>
-    </div>
-</div>
+    
+    <script type="application/json" id="chart-data">
+  {
+    "championCounts": {{ champion_counts | tojson | safe }},
+    "winRates": {{ win_rates | tojson | safe }},
+    "radarData": {{ radar_data | tojson | safe }}
+  }
+</script>
 
-<div class="secondary-container">
-    <!-- Additional data containers -->
-    <div class="data-container-1"> 
-      <div class="overall-win-rate">
 
-        <div class="overall-win-rate-left">
-          <h1> Win Rate </h1>
-        </div>
+    
+    <div class="secondary-container">
 
-        <div class="overall-win-rate-right">
-          <h1> 55% </h1>
-        </div>
-
-      </div>
-
-      <div class="previous-game-scores">
-        <div class="previous-game-title-box">
-          <h1> Previous Game Results </h1>
-        </div>
         
-        <div class="table-div">
-          <table class="previous-game-table">
-            <tr>
-              <th>Result</th>
-              <th>Champion</th>
-              <th>Score</th>
-              <th>Date</th>
-              <th>Time</th>
-            </tr>
-            <tr>
-              <td>Win</td>
-              <td>John</td>
-              <td>01-09</td>
-              <td>11/03/25</td>
-              <td>12:00</td>
-            </tr>
-            <tr>
-              <td>Win</td>
-              <td>John</td>
-              <td>01-09</td>
-              <td>11/03/25</td>
-              <td>12:00</td>
-            </tr>
-            <tr>
-              <td>Win</td>
-              <td>John</td>
-              <td>01-09</td>
-              <td>11/03/25</td>
-              <td>12:00</td>
-            </tr>
-            <tr>
-              <td>Win</td>
-              <td>John</td>
-              <td>01-09</td>
-              <td>11/03/25</td>
-              <td>12:00</td>
-            </tr>
-            <tr>
-              <td>Win</td>
-              <td>John</td>
-              <td>01-09</td>
-              <td>11/03/25</td>
-              <td>12:00</td>
-            </tr>
-          </table>
+        <div class="data-container-1"> 
+            <div class="overall-win-rate">
+                <div class="overall-win-rate-left">
+                    <h1> Win Rate </h1>
+                </div>
+                <div class="overall-win-rate-right">
+                    <h1> {{ win_rate }}% </h1> 
+                </div>
+            </div>
+
+            <div class="previous-game-scores">
+                <div class="previous-game-title-box">
+                    <h1>Previous Game Results</h1>
+                </div>
+
+                <div class="table-div">
+                    <table class="previous-game-table">
+                        <thead>
+                            <tr>
+                                <th>Result</th>
+                                <th>Champion</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                            <tr>
+                                <td>{{ row.result }}</td>
+                                <td>{{ row.champion }}</td>
+                                <td>{{ row.score }}</td>
+                                <td>{{ row.date }}</td>
+                                <td>{{ row.time }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5">No data available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="bottom-container-prev-games"></div>
+            </div>
         </div>
 
-        <div class="bottom-container-prev-games"></div>
-      </div>
-    </div>
+        <!-- Total Wins -->
+        <div class="data-container-2"> 
+            <div class="overall-win-rate">
+                <div class="overall-win-rate-left">
+                    <h1> Total Wins </h1>
+                </div>
+                <div class="overall-win-rate-right">
+                    <h1> {{ total_wins }} </h1> 
+                </div>
+            </div>
 
-
-
-    <div class="data-container-2"> 
-      <div class="overall-win-rate">
-
-        <div class="overall-win-rate-left">
-          <h1> Total Wins </h1>
+            <div class="previous-game-scores">
+                <div class="previous-game-title-box">
+                    <h1>Previous Game Results</h1>
+                </div>
+                <div class="radar-chart-container">
+                <h2>Performance Radar </h2>
+                <canvas id="performanceRadar"></canvas>
+                </div>
+                
+                <div class="bottom-container-prev-games"></div>
+                
+            </div>
+            
         </div>
-
-        <div class="overall-win-rate-right">
-          <h1> 400 </h1>
-        </div>
-
-      </div>
-
-      <div class="previous-game-scores">
-        <div class="previous-game-title-box">
-          <h1> Progress Tracker </h1>
-        </div>
-        
-        <div class="table-div">
-          <canvas id="lineChart"></canvas>
-        </div>
-
-        <div class="bottom-container-prev-games"></div>
-      </div>
     </div>
 
     
-</div>
+    <div class="charts-section">
+        <h2>Champion Usage</h2>
+        <canvas id="championBarChart"></canvas>
 
-<script>
-  // Ensure the script runs after the DOM is fully loaded
-  document.addEventListener('DOMContentLoaded', () => {
-      const ctx = document.getElementById('myChart').getContext('2d');
-      const myChart = new Chart(ctx, {
-          type: 'bar', // Chart type
-          data: {
-              labels: ['Darius', 'Fiora', 'Lee Sin', 'Kha Zix'], // X-axis labels
-              datasets: [{
-                  label: 'Champion Win Rates (%)', // This label will not appear in a box
-                  data: [55, 70, 65, 80], // Y-axis data
-                  backgroundColor: [
-                      'rgba(255, 99, 132, 0.2)',
-                      'rgba(54, 162, 235, 0.2)',
-                      'rgba(255, 206, 86, 0.2)',
-                      'rgba(75, 192, 192, 0.2)'
-                  ],
-                  borderColor: [
-                      'rgba(255, 99, 132, 1)',
-                      'rgba(54, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 192, 192, 1)'
-                  ],
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              responsive: true, // Makes the chart responsive
-              plugins: {
-                  legend: {
-                      display: false // Disable the legend box
-                  },
-                  title: {
-                      display: true, // Enable the title
-                      text: 'Champion Win Rates (%)', // Use the label as the title
-                      font: {
-                          size: 18,
-                          weight: 'bold'
-                      },
-                      color: '#333' // Customize the title color
-                  }
-              },
-              scales: {
-                  y: {
-                      beginAtZero: true // Ensures Y-axis starts at 0
-                  }
-              }
-          }
-      });
-  });
-</script>
+        <h2>Champion Win Rates</h2>
+        <canvas id="championPieChart"></canvas>
+    </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-      // Get the canvas element for the line chart
-      const lineCtx = document.getElementById('lineChart').getContext('2d');
-
-      // Create the line chart
-      const lineChart = new Chart(lineCtx, {
-          type: 'line', // Specify the chart type as 'line'
-          data: {
-              labels: ['Game 1', 'Game 2', 'Game 3', 'Game 4', 'Game 5'], // X-axis labels
-              datasets: [{
-                  label: 'Scores Over Games', // Label for the dataset
-                  data: [10, 20, 15, 25, 30], // Y-axis data points
-                  borderColor: 'rgba(75, 192, 192, 1)', // Line color
-                  backgroundColor: 'rgba(75, 192, 192, 0.2)', // Fill color under the line
-                  borderWidth: 2, // Line thickness
-                  tension: 0.4 // Smoothness of the line
-              }]
-          },
-          options: {
-              responsive: true, // Makes the chart responsive
-              plugins: {
-                  legend: {
-                      display: true, // Show the legend
-                      labels: {
-                          color: '#fff' // Legend text color
-                      }
-                  },
-                  title: {
-                      display: true, // Show the chart title
-                      text: 'Scores Over Time', // Title text
-                      font: {
-                          size: 18,
-                          weight: 'bold'
-                      },
-                      color: '#fff' // Title color
-                  }
-              },
-              scales: {
-                  x: {
-                      ticks: {
-                          color: '#fff' // X-axis label color
-                      },
-                      grid: {
-                          color: 'rgba(255, 255, 255, 0.1)' // X-axis grid line color
-                      }
-                  },
-                  y: {
-                      beginAtZero: true, // Start Y-axis at 0
-                      ticks: {
-                          color: '#fff' // Y-axis label color
-                      },
-                      grid: {
-                          color: 'rgba(255, 255, 255, 0.1)' // Y-axis grid line color
-                      }
-                  }
-              }
-          }
-      });
-  });
-</script>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/visualisation.js') }}"></script>
+</main>
 {% endblock %}

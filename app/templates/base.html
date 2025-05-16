@@ -24,7 +24,7 @@
     <div class="nav-left">
       <!--<img src="{{ url_for('static', filename='ourlogo.png') }}" class="logo" alt="Logo" />--> 
       <!-- we have no logo yet, so I am gonna commment out here for now, will add it when we have one-->
-      <h1 class="nav-title">Gaming Analyzer</h1>
+      <h1 class="nav-title">GameNalyzer</h1>
     </div>
   
     <div class="nav-center">
@@ -73,7 +73,7 @@
       <li class="dropdown">
         <button class="dropdown-btn">Games</button>
         <ul class="dropdown-content">
-          <li><a href="#" class="protected-link" data-url="{{ url_for('upload_bp.upload_file') }}">League of Legends</a></li>
+          <li><a href="#" class="protected-link" data-url="{{ url_for('upload_bp.upload_page') }}">League of Legends</a></li>
           <li><a href="#">Valorant</a></li>
           <li><a href="#">PUBG</a></li>
           <li><a href="#">APEX</a></li>
@@ -94,8 +94,6 @@
   <script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
   <script src="{{ url_for('static', filename='js/userSearch.js') }}"></script>
   <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
-
-</body>
 </html>
 
 

@@ -113,6 +113,7 @@
     margin-top: 10px;
     height: 10%;
     width: 90%;
+    color:white;
     background-color: #0c1117;
     border-radius: 20px;
     justify-content: center;
@@ -120,6 +121,12 @@
     display: flex;
     text-align: center;
   }
+
+
+  .champion-container {
+    color: white;
+  }
+
 
   .game-to-be-added {
     width: 600px;

@@ -15,37 +15,36 @@ class User(UserMixin,db.Model):
     PUBG_username: so.Mapped[str | None] = so.mapped_column(sa.String(150), unique=True, nullable=True)
     apex_username: so.Mapped[str | None] = so.mapped_column(sa.String(150), unique=True, nullable=True)
 
-    league_games: so.WriteOnlyMapped[list['League_Game_Instance']] = so.relationship(
-        back_populates="users", secondary="league_game_player", lazy="dynamic"
-    )
+    #relationships
+    games: so.Mapped[list['LeagueGame']] = so.relationship(back_populates="user")
 
-class League_Game_Instance(db.Model):
-    __tablename__ = "league_game_instance"
+class LeagueGame(db.Model):
+    __tablename__ = "league_game"
 
-    game_id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, autoincrement=True)
+
+    # Optional foreign key to User
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("user.id"), nullable=True)
+
+    # Game info
+    game_id: so.Mapped[int] = so.mapped_column(nullable=False)
     date_played: so.Mapped[datetime.datetime] = so.mapped_column(nullable=False)
-    game_duration: so.Mapped[datetime.time] = so.mapped_column(nullable=False)
+    game_duration: so.Mapped[str] = so.mapped_column(sa.String(20), nullable=False)
     winning_team: so.Mapped[str] = so.mapped_column(sa.String(150), nullable=False)
 
-    users: so.WriteOnlyMapped[list['User']] = so.relationship(
-        back_populates="league_games", secondary="league_game_player"
-    )
-
-class League_Game_Player(db.Model):
-    __tablename__ = "league_game_player"
-
-    league_username: so.Mapped[str] = so.mapped_column(
-        sa.String(150), sa.ForeignKey("user.league_username"), primary_key=True
-    )
-    game_id: so.Mapped[int] = so.mapped_column(
-        sa.Integer, sa.ForeignKey("league_game_instance.game_id"), primary_key=True
-    )
+    # Player info
+    league_username: so.Mapped[str] = so.mapped_column(sa.String(150), nullable=False)
     champion: so.Mapped[str] = so.mapped_column(sa.String(150), nullable=False)
     kills: so.Mapped[int] = so.mapped_column(nullable=False)
     deaths: so.Mapped[int] = so.mapped_column(nullable=False)
     assists: so.Mapped[int] = so.mapped_column(nullable=False)
     kda: so.Mapped[float] = so.mapped_column(nullable=False)
     team: so.Mapped[str] = so.mapped_column(sa.String(150), nullable=False)
+
+    # Relationship (backref for convenience)
+    user: so.Mapped['User'] = so.relationship(back_populates="games")
+
+
 
 class Friendship(db.Model):
     __tablename__ = "friendship"
