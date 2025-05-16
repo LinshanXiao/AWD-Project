@@ -14,17 +14,11 @@ class VisualisationTestCase(unittest.TestCase):
         self.ctx.push()
         db.create_all()
 
-        
         hashed_pw = generate_password_hash('Test123!')
-        self.user = User(username='tester', email='test@gmail.com', password=hashed_pw)
+        self.user = User(username='tester', email='test@gmail.com', password=hashed_pw, league_username='tester')
         db.session.add(self.user)
         db.session.commit()
 
-        
-        with self.client.session_transaction() as sess:
-            sess['_user_id'] = str(self.user.id)
-
-        
         game = LeagueGame(
             user_id=self.user.id,
             game_id=9999,
@@ -42,13 +36,18 @@ class VisualisationTestCase(unittest.TestCase):
         db.session.add(game)
         db.session.commit()
 
+        
+        with self.app.test_request_context():
+            login_user(self.user)
+
     def tearDown(self):
         db.session.remove()
         db.drop_all()
         self.ctx.pop()
 
     def test_visualisation_page(self):
-        response = self.client.get('/visualisation')
+        response = self.client.get(f'/visualisation/{self.user.league_username}')
+
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Win Rate', response.data)  
         self.assertIn(b'Ahri', response.data)       
