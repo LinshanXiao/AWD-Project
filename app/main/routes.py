@@ -55,7 +55,7 @@ def visualisation():
         rows.append({
             'result': result,
             'champion': g.champion.capitalize(),
-            'score': f"{g.kills}-{g.deaths}-{g.assists}",
+            'score(K-D-A)': f"{g.kills}-{g.deaths}-{g.assists}",
             'date': g.date_played.strftime('%d/%m/%y'),
             'time': g.game_duration
         })

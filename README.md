@@ -87,14 +87,15 @@ Access the app at http://localhost:5000
 - **Unit Testing**  
 Unit tests are written using the unittest framework. To run unit tests:
 ```
-python -m unittest discover tests
+python -m unittest discover -s tests
+
 ```
 - **UI Testing with Selenium**
 - To run Selenium-based browser tests:
 - Ensure you have selenium and the appropriate WebDriver installed (e.g., ChromeDriver).
 - Run the tests:
 ```
-python tests/test_ui.py
+python tests/system_test.py
 ```
 ## Target audience
 This project is intended for gamers who wish to track, analyze, and share their match statistics. It is also built as a practical web development assignment for CITS3403 Agile Web Development.

@@ -185,4 +185,6 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# chromedriver
+chromedriver.exe
 
