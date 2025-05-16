@@ -66,13 +66,16 @@
 ├── populate_users.py
 ├── requirement.txt
 └── run.py
-
+```
 ---
-## Running the App Locally
+
+# Running the App Locally
+
 ### 1. Clone the repository
 ```
 git clone https://github.com/LinshanXiao/AWD-Project.git
 ```
+
 ### 2. Create a virtual environment and activate it
 ```
 python -m venv venv
@@ -96,6 +99,7 @@ Access the app at http://localhost:5000
 ## Testing
 - **Unit Testing**  
 Unit tests are written using the unittest framework. To run unit tests:
+
 ```
 python -m unittest discover -s tests
 
