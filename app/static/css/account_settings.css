@@ -77,3 +77,22 @@ form {
         padding: 8px 15px;
     }
 }
+
+.flash-message {
+    margin-left: 10px;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    position: absolute;
+    left: 105%; /* Adjust as needed */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #f8d7da; /* Default background for error messages */
+    color: #721c24; /* Default text color for error messages */
+    border: 1px solid #f5c6cb; /* Default border for error messages */
+}
