@@ -1,5 +1,7 @@
 from app import create_app, db
-from app.models import User
+from app.models import User, FriendRequest, Friendship
+
+
 
 def populate_users():
     # Sample data to populate the user table
@@ -16,6 +18,35 @@ def populate_users():
     db.session.commit()
 
     print("User table populated successfully!")
+
+    # Create friend requests
+    friend_requests = [
+        FriendRequest(sender_id=users[2].id, receiver_id=users[0].id),  # john_doe -> jane_smith
+        FriendRequest(sender_id=users[2].id, receiver_id=users[3].id),  # mike_ross -> sarah_connor
+        FriendRequest(sender_id=users[4].id, receiver_id=users[0].id),  # john_doe -> jane_smith
+    ]
+
+    db.session.add_all(friend_requests)
+    db.session.commit()
+
+    print("Friend requests created successfully!")
+
+    # Create friendships
+    friendships = [
+        Friendship(user_id=users[0].id, friend_id=users[4].id),  # john_doe <-> tony_stark
+        Friendship(user_id=users[4].id, friend_id=users[0].id),  # tony_stark <-> john_doe
+        Friendship(user_id=users[1].id, friend_id=users[3].id),  # jane_smith <-> sarah_connor
+        Friendship(user_id=users[3].id, friend_id=users[1].id),  # sarah_connor <-> jane_smith
+        Friendship(user_id=users[0].id, friend_id=users[1].id),  # john_doe <-> tony_stark
+        Friendship(user_id=users[1].id, friend_id=users[0].id),  # tony_stark <-> john_doe
+        Friendship(user_id=users[0].id, friend_id=users[3].id),  # jane_smith <-> sarah_connor
+        Friendship(user_id=users[3].id, friend_id=users[0].id),  # sarah_connor <-> jane_smith
+    ]
+
+    db.session.add_all(friendships)
+    db.session.commit()
+
+    print("Friendships created successfully!")
 
 if __name__ == "__main__":
     app = create_app()  # Create the Flask application

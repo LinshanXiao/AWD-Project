@@ -80,20 +80,20 @@
                 {% endfor %}
             {% else %}
                 <!--This will display if the user initially has no requests-->
-                <div class="no-friend-requests">
+                <div class="no-friend-requests" id="no-friend-requests">
                     <div class="white-box">
-                        <h2> You currently have no friends </h2>
-                    </div>   
+                        <h2> You currently have no friend requests </h2>
+                    </div>
                 </div>
             {% endif %}
 
             <!--This will display if the user has unadded all of their friends-->
-            <div class="no-friend-requests" id="removed-all-friends" style="display: none;">
+            <div class="no-friend-requests" id="no-friends" style="display: none;">
                 <div class="white-box">
                     <h2> You currently have no friends </h2>
-                </div>   
+                </div>
             </div>
-        </div>
+
         <div class="bottom-box"></div>
     </div>
     </div>
@@ -127,6 +127,12 @@
 
                     // Add the friend to the "Current Friends" section
                     addFriendToList(friendName);
+
+                    // Remove the "You currently have no friends" message if it exists
+                    const noFriendsMessage = document.querySelector('.no-friend-requests');
+                    if (noFriendsMessage && noFriendsMessage.parentElement.classList.contains('access-current-friends-list')) {
+                        noFriendsMessage.remove();
+                    }
 
                     // Check if there are no more friend requests
                     const remainingRequests = document.querySelectorAll('.request-item').length;
@@ -185,14 +191,10 @@
                     // Check if there are no more friends
                     const remainingFriends = document.querySelectorAll('.friend-item').length;
                     if (remainingFriends === 0) {
-                        const noFriendsMessage = document.createElement('div');
-                        noFriendsMessage.className = 'no-friend-requests';
-                        noFriendsMessage.innerHTML = `
-                            <div class="white-box">
-                                <h2> You currently have no friends </h2>
-                            </div>
-                        `;
-                        document.querySelector('.access-current-friends-list').appendChild(noFriendsMessage);
+                        const noFriendsMessage = document.getElementById('no-friends');
+                        if (noFriendsMessage) {
+                            noFriendsMessage.style.display = 'block';
+                        }
                     }
                 }
             });
@@ -203,9 +205,9 @@
         const parentClass = document.querySelector('.access-current-friends-list');
 
         // Remove the "no friends" message if it exists
-        const noFriendsMessage = document.querySelector('.no-friend-requests');
+        const noFriendsMessage = document.getElementById('no-friends');
         if (noFriendsMessage) {
-            noFriendsMessage.remove();
+         noFriendsMessage.style.display = 'none';
         }
 
         // Add the new friend to the list
