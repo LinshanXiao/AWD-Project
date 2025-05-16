@@ -12,7 +12,7 @@ from app.utils.email_utils import send_verification_code
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(username=form.username.data.lower()).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
             flash("Login successful!")
@@ -28,7 +28,7 @@ def register():
     if form.validate_on_submit():
         hashed_pw = generate_password_hash(form.password.data)
         new_user = User(
-            username=form.username.data,
+            username=form.username.data.lower(),
             email=form.email.data,
             password=hashed_pw
         )

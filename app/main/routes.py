@@ -251,22 +251,76 @@ def account_settings():
         PUBG_username = request.form.get('PUBG_username') 
         apex_username = request.form.get('apex_username') 
 
-        # Update the current user's settings
-        
-        current_user.username = username
-        current_user.email = email
-        if league_username != '':
-            current_user.league_username = league_username
-        if valorant_username != '':
-            current_user.valorant_username = valorant_username
-        if PUBG_username != '':
-            current_user.PUBG_username = PUBG_username
-        if apex_username != '':
-            current_user.apex_username = apex_username
+        if User.query.filter(func.lower(User.username) == username.lower(), User.id != current_user.id).first():
+            flash("Username is already taken.", "danger")
+        else:
+            current_user.username = username
+            flash("Username updated successfully!", "success")
 
-        # Save changes to the database
-        db.session.commit()
-        flash('Account settings updated successfully!', 'success')
+        
+        if User.query.filter(func.lower(User.email) == email.lower(), User.id != current_user.id).first():
+            flash("Email is already taken.", "danger")
+        else:
+            current_user.email = email
+            flash("Email updated successfully!", "success")
+
+
+        if league_username != '':
+            existing_user = User.query.filter(
+                func.lower(User.league_username) == league_username.lower(),
+                User.id != current_user.id  # Exclude the current user
+            ).first()
+
+            if not existing_user:
+                current_user.league_username = league_username
+                flash("League username updated successfully!", "success")
+            else:
+                flash("League username is already taken.", "danger")
+
+        
+        if valorant_username != '':
+            existing_user = User.query.filter(
+                func.lower(User.valorant_username) == valorant_username.lower(),
+                User.id != current_user.id  # Exclude the current user
+            ).first()
+
+            if not existing_user:
+                current_user.valorant_username = valorant_username
+                flash("Valorant username updated successfully!", "success")
+            else:
+                flash("Valorant username is already taken.", "danger")
+
+        # Check and update PUBG_username
+        if PUBG_username != '':
+            existing_user = User.query.filter(
+                func.lower(User.PUBG_username) == PUBG_username.lower(),
+                User.id != current_user.id  # Exclude the current user
+            ).first()
+
+            if not existing_user:
+                current_user.PUBG_username = PUBG_username
+                flash("PUBG username updated successfully!", "success")
+            else:
+                flash("PUBG username is already taken.", "danger")
+
+        # Check and update apex_username
+        if apex_username != '':
+            existing_user = User.query.filter(
+                func.lower(User.apex_username) == apex_username.lower(),
+                User.id != current_user.id  # Exclude the current user
+            ).first()
+
+            if not existing_user:
+                current_user.apex_username = apex_username
+                flash("Apex username updated successfully!", "success")
+            else:
+                flash("Apex username is already taken.", "danger")
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occurred while saving your changes. Please try again.", "danger")
         return redirect(url_for('main_bp.account_settings'))
 
     return render_template('account_settings.html', user=current_user)
