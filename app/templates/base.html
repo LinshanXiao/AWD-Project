@@ -51,7 +51,7 @@
               {% if current_user.profile_pic %}
               <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}" alt="Profile Picture" class="navbar-profile-pic">
               {% else %}
-              <img src="{{ url_for('static', filename='images/cat.jpg') }}" alt="Default Profile Picture" class="navbar-profile-pic">
+              <img src="{{ url_for('static', filename='images/no_profile_pic.jpg') }}" alt="Default Profile Picture" class="navbar-profile-pic">
               {% endif %}
           
         <div class="dropdown-menu" id="dropdownMenu">
