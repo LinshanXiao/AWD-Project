@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/notification.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="main-container">
+
+
+    <div class="left-container">  
+        <div class="info-container">
+            <div class="title-container">
+                <h1 class="title">Find Friends</h1>
+            </div>
+            <div class="request-friends">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search users by name or ID" />
+                    <button class="search-icon">🔍</button>
+                    <div class="search-dropdown" id="searchResults"></div>
+                </div>
+            </div>
+            <div class="bottom-box"></div>
+            
+        </div>
+
+
+
+        <div class="info-container">
+            <div class="title-container">
+                <h1 class="title">Friend Requests</h1>
+            </div>
+            
+
+            {% if friend_requests %}
+                {% for friend_request in friend_requests %}
+                <div class="friend-requests request-item" data-request-id="{{ friend_request.id }}">
+                    <div class="name-box">
+                        <h2> {{ friend_request.sender.username }} </h2>
+                    </div>
+                    <button class="accept-button" type="button">&#10003;</button>
+                    <button class="decline-button" type="button">X</button>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!--This will display if the user initially has no requests-->
+                <div class="no-friend-requests">
+                    <div class="white-box">
+                        <h2> You currently have no friend requests </h2>
+                    </div>   
+                </div>
+            {% endif %}
+
+            <!--This will display if the user has deleted all their friend requests-->
+            <div class="no-friend-requests" id="removed-all-requests" style="display: none;">
+                <div class="white-box">
+                    <h2> You currently have no friend requests </h2>
+                </div>   
+            </div>
+            <div class="bottom-box"></div>
+        </div>
+    </div>
+
+
+    <div class="right-container">
+        <div class="info-container">
+            <div class="title-container">
+                <h1 class="title">Current Friends</h1>
+            </div>
+            <div class="access-current-friends-list">
+                {% if current_friends %}
+                    {% for friend in current_friends %}
+                    <div class="friend-requests friend-item" data-friend-id="{{ friend.id }}">
+                        <div class="name-box">
+                            {% if friend.league_username %}
+                            <h2 class="access-friend-name">
+                                <a href="{{ url_for('main_bp.visualisation', league_username=friend.league_username) }}">
+                                    {{ friend.username }}
+                                </a>
+                            </h2>
+                            {% else %}
+                            <h2 class="access-friend-name no-league">
+                                {{ friend.username }}
+                            </h2>
+                            {% endif %}
+                        </div>
+                    <button class="unadd-button" type="button">Unadd</button>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!--This will display if the user initially has no requests-->
+                <div class="no-friend-requests" id="no-friend-requests">
+                    <div class="white-box">
+                        <h2> You currently have no friend requests </h2>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!--This will display if the user has unadded all of their friends-->
+            <div class="no-friend-requests" id="no-friends" style="display: none;">
+                <div class="white-box">
+                    <h2> You currently have no friends </h2>
+                </div>
+            </div>
+
+        <div class="bottom-box"></div>
+    </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('click', function (event) {
+        const acceptButton = event.target.closest('.accept-button');
+        const declineButton = event.target.closest('.decline-button');
+        const unaddButton = event.target.closest('.unadd-button');
+
+        // Accept Friend Request
+        if (acceptButton) {
+            const requestItem = acceptButton.closest('.friend-requests');
+            const requestId = requestItem.dataset.requestId;
+
+            fetch('/accept_friend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ request_id: requestId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    const friendName = requestItem.querySelector('.name-box h2').textContent;
+
+                    // Remove the friend request from the list
+                    requestItem.remove();
+
+                    // Add the friend to the "Current Friends" section
+                    addFriendToList(friendName);
+
+                    // Remove the "You currently have no friends" message if it exists
+                    const noFriendsMessage = document.querySelector('.no-friend-requests');
+                    if (noFriendsMessage && noFriendsMessage.parentElement.classList.contains('access-current-friends-list')) {
+                        noFriendsMessage.remove();
+                    }
+
+                    // Check if there are no more friend requests
+                    const remainingRequests = document.querySelectorAll('.request-item').length;
+                    if (remainingRequests === 0) {
+                        document.getElementById('removed-all-requests').style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        // Decline Friend Request
+        if (declineButton) {
+            const requestItem = declineButton.closest('.friend-requests');
+            const requestId = requestItem.dataset.requestId;
+
+            fetch('/decline_friend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ request_id: requestId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Remove the friend request from the list
+                    requestItem.remove();
+
+                    // Check if there are no more friend requests
+                    const remainingRequests = document.querySelectorAll('.request-item').length;
+                    if (remainingRequests === 0) {
+                        document.getElementById('removed-all-requests').style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        // Unadd Friend
+        if (unaddButton) {
+            const friendItem = unaddButton.closest('.friend-requests');
+            const friendId = friendItem.dataset.friendId;
+
+            fetch('/remove_friend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ friend_id: friendId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Remove the friend from the list
+                    friendItem.remove();
+
+                    // Check if there are no more friends
+                    const remainingFriends = document.querySelectorAll('.friend-item').length;
+                    if (remainingFriends === 0) {
+                        const noFriendsMessage = document.getElementById('no-friends');
+                        if (noFriendsMessage) {
+                            noFriendsMessage.style.display = 'block';
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    function addFriendToList(friendName) {
+        const parentClass = document.querySelector('.access-current-friends-list');
+
+        // Remove the "no friends" message if it exists
+        const noFriendsMessage = document.getElementById('no-friends');
+        if (noFriendsMessage) {
+         noFriendsMessage.style.display = 'none';
+        }
+
+        // Add the new friend to the list
+        const newFriend = document.createElement('div');
+        newFriend.className = 'friend-requests friend-item';
+        newFriend.dataset.friendId = Math.random(); // Temporary ID for DOM manipulation
+        newFriend.innerHTML = `
+            <div class="name-box">
+                <h2 class="access-friend-name"> ${friendName} </h2>
+            </div>
+            <button class="unadd-button" type="button">Unadd</button>
+        `;
+
+        parentClass.appendChild(newFriend);
+    }
+</script>
+
+{% endblock %}

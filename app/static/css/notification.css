@@ -1,0 +1,279 @@
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background-color: #0c1117;
+}
+
+.main-container {
+  display: flex;
+  flex-direction:row;
+
+  overflow-x: auto;
+
+  min-height: 100vh; /* Fill the entire viewport height */
+  height:auto;
+
+  width: 100%; /* Fill the entire width of the viewport */
+  background-color: white; /* Set a background color */
+}
+
+.left-container, .right-container {
+  height: auto;
+  width: 50%;
+  min-width: 370px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: flex-start;
+  align-items: center;
+  padding: 20px;
+
+}
+
+.left-container {
+  background-color: #1f2937; /* Dark gray background */
+  border-right: #0c1117 5px solid; /* Right border */
+  
+}
+
+.right-container {
+  background-color:  #1f2937; /* Slightly lighter gray background */
+  border-left: #0c1117 5px solid; /* Right border */
+}
+
+.info-container {
+  width: 80%;
+  min-width: 350px;
+  height: auto;
+  background-color: #111827; /* Light gray background */
+
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  border-radius: 12px; /* Round the top-left and top-right corners */
+  border: black 2px solid;
+
+
+}
+
+.title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 50px;
+  background-color: #1a1a1a; /* Dark gray background */
+
+  border-radius: 10px 10px 0 0; /* Round the top-left and top-right corners */
+
+  border-bottom: black 2px solid;
+
+}
+
+.title {
+  color: white;
+  font-size: 1.75rem;
+  margin: 0;
+}
+
+.request-friends {
+  width: 100%;
+  height: 100px;
+  background-color: #111827; 
+
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+
+  border: black 2px solid;
+
+
+}
+
+.friend-requests {
+  width: 100%;
+  height: 50px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-right:#0c1117 2px solid;
+  border-left:#0c1117 2px solid;
+  border-bottom:#0c1117 2px solid;
+
+  background-color:  rgb(55, 41, 65);
+}
+
+.access-current-friends-list {
+  width:100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  
+}
+
+.name-box {
+  width: 250px;
+  height: 40px;
+  margin: 5px;
+  background-color: #f0f0f0; /* Light gray background */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center; /* Not alligned vertically yet */
+
+  border: #0c1117 2px solid;
+}
+
+.name-box h2 {
+  color: black;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.accept-button {
+  width: 40px;
+  height: 40px;
+
+  margin-left: 0px;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+
+  background-color: #4CAF50; /* Green background */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border:#90EE90 2px solid;
+
+  color: white;
+  font-size: 1.5rem;
+}
+
+.accept-button:hover {
+  border: #006400 2px solid; 
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.tick {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.decline-button {
+  width: 40px;
+  height: 40px;
+
+  margin-left: 0px;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+
+  background-color: #f44336; /* Red background */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border:#FF7F7F 2px solid;
+
+  color: white;
+  font-size: 1.5rem;
+}
+
+.decline-button:hover {
+  border: #A52A2A 2px solid; 
+}
+
+
+.no-friend-requests {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  padding: 0px;
+  text-align: center; /* Center text within the element */
+}
+
+.white-box {
+  width: 340px;
+  height: 90px;
+  margin: 5px;
+  background-color: #f0f0f0; /* Light gray background */
+
+  display: flex; /* Enable Flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  text-align: center; /* Center text within the element */
+
+  border: #0c1117 2px solid;
+  border-radius: 10px; /* Round the corners */
+}
+
+.no-friend-requests h2 {
+  color: black;
+  font-size: 1.5rem;
+}
+
+.bottom-box {
+  height: 30px;
+  width: 100%;
+
+  background-color: #1a1a1a; /* Dark gray background */
+
+  border-radius: 0 0 10px 10px; /* Round the bottom-left and bottom-right corners */
+
+  border-top: black 2px solid;
+}
+
+.unadd-button {
+  width: 80px;
+  height: 40px;
+  margin-right: 5px;
+
+  background-color: #f44336; /* Red background */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border:#FF7F7F 2px solid;
+
+  color: white;
+  font-size: 1.25rem;
+}
+
+.unadd-button:hover {
+  border: #A52A2A 2px solid; 
+}
+
+.no-league {
+  color: gray;
+  cursor: not-allowed;
+}
+
+.no-league:hover::after {
+  content: "This user does not have a League username linked.";
+  position: absolute;
+  background-color: #f8f9fa;
+  color: #333;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+}
