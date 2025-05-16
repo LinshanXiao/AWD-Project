@@ -22,8 +22,7 @@
   <!-- Header -->
   <header class="topnav">
     <div class="nav-left">
-      <!--<img src="{{ url_for('static', filename='ourlogo.png') }}" class="logo" alt="Logo" />--> 
-      <!-- we have no logo yet, so I am gonna commment out here for now, will add it when we have one-->
+      
       <h1 class="nav-title">GameNalyzer</h1>
     </div>
   
@@ -47,8 +46,13 @@
         <!-- here we got 3 notification for example, can be changed or delete afterwwards-->
       </div>
       <div class="user-dropdown">
-        <img src="{{ url_for('static', filename='images/cat.jpg') if current_user.is_authenticated else url_for('static', filename='images/no_profile_pic.jpg') }}"
- alt="User" class="avatar" id="userAvatar">
+                {% if current_user.is_authenticated and current_user.profile_image and current_user.profile_image != 'no_profile_pic.jpg' %}
+          <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_image) }}"
+              alt="User" class="avatar" id="userAvatar">
+        {% else %}
+          <img src="{{ url_for('static', filename='images/no_profile_pic.jpg') }}"
+              alt="User" class="avatar" id="userAvatar">
+        {% endif %}
         <div class="dropdown-menu" id="dropdownMenu">
           {% if current_user.is_authenticated %}
             <p>Welcome, {{ current_user.username }}!</p>

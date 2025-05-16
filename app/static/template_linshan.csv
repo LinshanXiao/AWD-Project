@@ -1,6 +1,0 @@
-game_id,date_played,game_duration,winning_team,league_username,champion,kills,deaths,assists,team
-10001,2024-04-01,00:25:00,Blue,linshan,Ahri,7,3,5,Blue
-10002,2024-04-02,00:28:00,Red,linshan,Yasuo,5,7,2,Red
-10003,2024-04-03,00:22:00,Red,linshan,Lux,10,1,12,Red
-10004,2024-04-04,00:30:00,Blue,linshan,Ezreal,4,4,10,Blue
-10005,2024-04-05,00:18:00,Blue,linshan,Kennen,2,0,8,Blue

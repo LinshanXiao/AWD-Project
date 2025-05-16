@@ -5,6 +5,7 @@ import re
 from app.models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import session
+from flask_wtf.file import FileField, FileAllowed
 
 # strong password validator
 def strong_password(form, field):
@@ -75,3 +76,7 @@ class ManualUploadForm(FlaskForm):
     assists = IntegerField('Assists', validators=[Optional()])
     team = StringField('Team', validators=[Optional(), Length(max=100)])
     submit = SubmitField('Submit')
+
+class UpdateProfileImageForm(FlaskForm):
+    profile_image = FileField('Upload Profile Picture', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+    submit = SubmitField('Upload')

@@ -6,7 +6,27 @@ from app import db
 from datetime import datetime
 from collections import defaultdict
 import sqlalchemy as sa
+import secrets
+from PIL import Image
+import os
+from app.forms import UpdateProfileImageForm
+from sqlalchemy import func
+from collections import Counter
 
+
+
+def save_profile_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join('app/static/profile_pics', picture_fn)
+
+    output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_fn
 
 @main_bp.route('/')
 def index():
@@ -17,10 +37,44 @@ def home():
     return render_template('home.html')
 
 
-@main_bp.route('/profile')
+@main_bp.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    return render_template('profile.html',user=current_user)
+    form = UpdateProfileImageForm()
+    if form.validate_on_submit():
+        if form.profile_image.data:
+            picture_file = save_profile_picture(form.profile_image.data)
+            current_user.profile_image = picture_file
+            db.session.commit()
+            flash('Profile image updated!', 'success')
+            return redirect(url_for('main_bp.profile'))
+        
+
+    games = LeagueGame.query.filter_by(user_id=current_user.id).all()
+
+    total_kills = sum(g.kills for g in games if g.kills is not None)
+    total_deaths = sum(g.deaths for g in games if g.deaths is not None)
+    total_assists = sum(g.assists for g in games if g.assists is not None)
+
+    avg_kda = (
+        round((total_kills + total_assists) / total_deaths, 2)
+        if total_deaths > 0 else "∞"
+    ) if games else "N/A"
+
+    # ✅ Most played champion
+    champion_counter = Counter(g.champion.strip().capitalize() for g in games)
+    most_played = champion_counter.most_common(1)[0][0] if champion_counter else "N/A"
+
+    return render_template(
+        'profile.html',
+        user=current_user,
+        form=form,
+        total_kills=total_kills,
+        total_deaths=total_deaths,
+        total_assists=total_assists,
+        avg_kda=avg_kda,
+        most_played=most_played
+    )
 
 
 
@@ -75,7 +129,7 @@ def visualisation(league_username):
         rows.append({
             'result': result,
             'champion': g.champion.capitalize(),
-            'score(K-D-A)': f"{g.kills}-{g.deaths}-{g.assists}",
+            'score': f"{g.kills}-{g.deaths}-{g.assists}",
             'date': g.date_played.strftime('%d/%m/%y'),
             'time': g.game_duration
         })
@@ -224,30 +278,32 @@ def account_settings():
 def accept_friend():
     data = request.get_json()
     request_id = data.get('request_id')
-
     if not request_id:
         return jsonify({'message': 'Missing request ID'}), 400
 
-    # Find the friend request
     friend_request = FriendRequest.query.get(request_id)
-    if not friend_request:
-        return jsonify({'message': 'Friend request not found'}), 404
+    if (not friend_request) or (friend_request.receiver_id != current_user.id):
+        return jsonify({'message': 'Friend request not found or not yours.'}), 404
 
-    # Ensure the current user is the receiver of the request
-    if friend_request.receiver_id != current_user.id:
-        return jsonify({'message': 'You are not authorized to accept this request'}), 403
+    
+    sender = friend_request.sender
 
-    # Add the friendship both ways
-    new_friendship_1 = Friendship(user_id=current_user.id, friend_id=friend_request.sender_id)
-    new_friendship_2 = Friendship(user_id=friend_request.sender_id, friend_id=current_user.id)
-    db.session.add(new_friendship_1)
-    db.session.add(new_friendship_2)
-
-    # Remove the pending friend request
+    
+    db.session.add(Friendship(user_id=current_user.id, friend_id=sender.id))
+    db.session.add(Friendship(user_id=sender.id, friend_id=current_user.id))
     db.session.delete(friend_request)
     db.session.commit()
 
-    return jsonify({'message': 'Friend request accepted!'}), 200
+    
+    return jsonify({
+        'message': 'Friend request accepted!',
+        'friend': {
+            'id': sender.id,
+            'username': sender.username,
+            'league_username': sender.league_username
+        }
+    }), 200
+
 
 
 

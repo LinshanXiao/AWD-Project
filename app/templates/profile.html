@@ -7,7 +7,21 @@
 {% block content %}
   <!-- Main Content for PROFILE PAGE -->
   <div class="profile-container">
-    <img src="{{ url_for('static', filename='images/no_profile_pic.jpg') }}" alt="User" class="profile_picture">
+        <form method="POST" enctype="multipart/form-data" id="avatarForm" style="margin: 0;">
+      {{ form.hidden_tag() }}
+      <input type="file" id="avatarInput" name="profile_image"
+            accept="image/*" style="display: none;"
+            onchange="document.getElementById('avatarForm').submit();">
+      <label for="avatarInput" style="cursor: pointer;">
+            {% if current_user.profile_image and current_user.profile_image != 'no_profile_pic.jpg' %}
+      <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_image) }}"
+          alt="User" class="profile_picture">
+    {% else %}
+      <img src="{{ url_for('static', filename='images/no_profile_pic.jpg') }}"
+          alt="User" class="profile_picture">
+    {% endif %}
+      </label>
+    </form>
     <div class="profile-details">
       <div class="nameId-container">
         <h1><strong>Username:</strong> {{ user.username }}</h1>
@@ -33,10 +47,12 @@
       <div class="champion-container">
         <h3>Stats:</h3>
         <ul>
-          <li>Kills: {{ user.kills }}</li>
-          <li>Deaths: {{ user.deaths }}</li>
-          <li>Assists: {{ user.assists }}</li>
-          <li>KDA: {{ user.kda }}</li>
+          <li>Kills: {{ total_kills }}</li>
+          <li>Deaths: {{ total_deaths }}</li>
+          <li>Assists: {{ total_assists }}</li>
+          <li>KDA: {{ avg_kda }}</li>
+          <li>Most Played Champion: {{ most_played }}</li>
+          
         </ul>
       </div>
     </div>

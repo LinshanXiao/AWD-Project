@@ -14,6 +14,7 @@ class User(UserMixin,db.Model):
     valorant_username: so.Mapped[str | None] = so.mapped_column(sa.String(150), unique=True, nullable=True)
     PUBG_username: so.Mapped[str | None] = so.mapped_column(sa.String(150), unique=True, nullable=True)
     apex_username: so.Mapped[str | None] = so.mapped_column(sa.String(150), unique=True, nullable=True)
+    profile_image: so.Mapped[str] = so.mapped_column(sa.String(200), nullable=False, default="no_profile_pic.jpg")
 
     #relationships
     games: so.Mapped[list['LeagueGame']] = so.relationship(back_populates="user")
